@@ -27,18 +27,18 @@ ag = argparse.ArgumentParser(
     description = "Python scripts that takes information from csv file and write lines",
     usage = "python3 Practice_script.py -f ~/USMA_ExpEvo_Samples.csv")
 ag.add_argument("-f", "--file", default = "", help = "csv with information of ID") # to read a csv file with sample imformation
-ag.add_argument("-n", "--email", default = "jorge_l.1@hotmail.com", help = "If you want to receive a notification when the process is done") 
-ag.add_argument("-r", "--ref", default = "", help = "csv file with the data of the references to map to")
-ag.add_argument("-m", "--mapping", default = "BWA", help = "mapping tool. BWA or Bowtie2 (B2)")
+#ag.add_argument("-n", "--email", default = "jorge_l.1@hotmail.com", help = "If you want to receive a notification when the process is done") 
+#ag.add_argument("-r", "--ref", default = "", help = "csv file with the data of the references to map to")
+#ag.add_argument("-m", "--mapping", default = "BWA", help = "mapping tool. BWA or Bowtie2 (B2)")
 # agregar un ardgumento para el working directory
 ag.add_argument("-d", "--directory", default = "/home/jcuamatzi", help = "path to the project directory")
 ##
 #
 args = vars(ag.parse_args())
 arg_file = args["file"]
-arg_references = args["ref"]
-email = str(args["email"])
-map_tool = str(args["mapping"])
+#arg_references = args["ref"]
+#email = str(args["email"])
+#map_tool = str(args["mapping"])
 directory = str(args["directory"])
 ##### Functions #####
 # Function to open a csv file
@@ -85,18 +85,12 @@ def header(smpls_ID,sge):
     print('''#!/bin/bash
 ## Use current working directory
 #$ -cwd''', file = sge)
-    if map_tool == "BWA" or map_tool == "bwa":
-        print ("module load bwa/0.7.4 htslib/1.2.1 gcc/5.1.0 samtools/1.9 picard/2.6.0 r/3.6.1 bedops/2.4.20 bedtools/2.24 gatk/4.1.1.0", file = sge)
-    elif map_tool == "B2" or map_tool == "Bowtie2":
-        print ("module load htslib/1.2.1 gcc/5.1.0 samtools/1.9 python37/3.7.0 fastqc/0.11.3 picard/2.6.0 bamtools/2.5.1 bowtie2/2.2.9", file = sge)
-    else:
-        sys.exit("No mapping tool selected, bye-bye")
     print ("##", file = sge)
     print ("##", file = sge)
 
 def pipeline(smpls_ID):
     save_sge = wd_project + "/bin/SGE/01_mapping"
-    if not os.path.exists(save_sge):
+    if not os.path.exists(save_sge):    
         os.makedirs(save_sge)
     sge_name = save_sge + "/" + fecha + ".sge"
     sge = open(sge_name, "w")
@@ -230,11 +224,11 @@ def pipeline(smpls_ID):
 ##### MAIN #####
 ## OPEN FILE ##
 matrix_csv = opencsv(arg_file)
-references_csv = opencsv(arg_references)
+#references_csv = opencsv(arg_references)
 wd_project = directory
 ## IDs & NAMES ##
 smpls_ID = extcol(matrix_csv, "#ID")
-wd_ref = extcol(references_csv, "RefPath")[0]
+#wd_ref = extcol(references_csv, "RefPath")[0]
 pyout_name = wd_project + "/log/mapping/"+fecha+"/python/" + tiempo + "_Mapping_py.out"
 if not os.path.exists(wd_project + "/log/mapping/"+fecha+"/python/"):
             os.makedirs(wd_project + "/log/mapping/"+fecha+"/python/")
