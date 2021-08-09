@@ -19,7 +19,7 @@ from datetime import date, datetime
 import sys
 import subprocess
 ##
-fecha = date.today().strftime('%Y-%m-%d')
+fecha = date.today().strftime('%Y%m%d')
 tiempo = datetime.now().strftime("%H:%M:%S")
 ##
 ag = argparse.ArgumentParser()
@@ -27,9 +27,9 @@ ag = argparse.ArgumentParser(
     description = "Python scripts that takes information from csv file and write lines",
     usage = "python3 Practice_script.py -f ~/USMA_ExpEvo_Samples.csv")
 ag.add_argument("-f", "--file", default = "", help = "csv with information of ID") # to read a csv file with sample imformation
-#ag.add_argument("-n", "--email", default = "jorge_l.1@hotmail.com", help = "If you want to receive a notification when the process is done") 
+ag.add_argument("-n", "--email", default = "jorge_l.1@hotmail.com", help = "If you want to receive a notification when the process is done") 
 #ag.add_argument("-r", "--ref", default = "", help = "csv file with the data of the references to map to")
-#ag.add_argument("-m", "--mapping", default = "BWA", help = "mapping tool. BWA or Bowtie2 (B2)")
+ag.add_argument("-m", "--mapping", default = "BWA", help = "mapping tool. BWA or Bowtie2 (B2)")
 # agregar un ardgumento para el working directory
 ag.add_argument("-d", "--directory", default = "/home/jcuamatzi", help = "path to the project directory")
 ag.add_argument("-t", "--task", default = "", help = "Task")
@@ -38,8 +38,8 @@ ag.add_argument("-t", "--task", default = "", help = "Task")
 args = vars(ag.parse_args())
 arg_file = args["file"]
 #arg_references = args["ref"]
-#email = str(args["email"])
-#map_tool = str(args["mapping"])
+email = str(args["email"])
+map_tool = str(args["mapping"])
 directory = str(args["directory"])
 task = str(args["task"])
 ##### Functions #####
@@ -78,15 +78,37 @@ def extcol (array, header):
 #
 #def header(smpls_ID, sge):
 def header(smpls_ID,sge):
-    path_error = wd_project + "/log/" + task + "/error/"
-    path_out = wd_project + "/log/" + task + "/out/"
+    path_error = wd_project + "log/" + task + "/error/"
+    path_out = wd_project + "log/" + task + "/out/"
     if not os.path.exists(path_error):
         os.makedirs(path_error)
     if not os.path.exists(path_out):
         os.makedirs(path_out)
     print('''#!/bin/bash
 ## Use current working directory
-#$ -cwd''', file = sge)
+#$ -cwd
+. /etc/profile.d/modules.sh
+##Error file
+#$ -e''', path_error + "/" + ID + ".error",'''
+##Out file
+#$ -o''', path_out  + "/" + smpls_ID + ".out",'''
+#$ -S /bin/bash
+## Job's name
+#$ -N''', task + "_" + ID,'''
+#$ -l vf=8G
+#$ -pe openmp 10
+#$ -m e
+source /etc/bashrc
+## notification
+#$ -M ''' + email + '''
+##
+## Modules''', file = sge)
+    if map_tool == "BWA" or map_tool == "bwa":
+        print ("module load bwa/0.7.4 htslib/1.2.1 gcc/5.1.0 samtools/1.9 picard/2.6.0 r/3.6.1 bedops/2.4.20 bedtools/2.24 gatk/4.1.1.0", file = sge)
+    elif map_tool == "B2" or map_tool == "Bowtie2":
+        print ("module load htslib/1.2.1 gcc/5.1.0 samtools/1.9 python37/3.7.0 fastqc/0.11.3 picard/2.6.0 bamtools/2.5.1 bowtie2/2.2.9", file = sge)
+    else:
+        sys.exit("No mapping tool selected, bye-bye")
     print ("##", file = sge)
     print ("##", file = sge)
 
@@ -237,9 +259,7 @@ if not os.path.exists(wd_project + "/log/mapping/"+fecha+"/python/"):
 pyout_name = os.path.normpath(pyout_name)
 pyoutput = open(pyout_name, "a+")
 for i in range(0, len(smpls_ID)):
-    ID = smpls_ID[i]
-    #lng_name = extcol(matrix_csv, "LongName")[i]
-    #shrt_name = extcol(matrix_csv, "ShortName")[i]
+    ID = smpls_ID[i]    
     #read_1 = extcol(matrix_csv, "Read1")[i]
     #read_2 = extcol(matrix_csv, "Read2")[i]
     #ref_name = extcol(references_csv, "RefName")[0]
