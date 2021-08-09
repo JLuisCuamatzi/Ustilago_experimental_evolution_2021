@@ -33,12 +33,13 @@ ag.add_argument("-m", "--mapping", default = "BWA", help = "mapping tool. BWA or
 # agregar un ardgumento para el working directory
 ag.add_argument("-d", "--directory", default = "/home/jcuamatiz", help = "path to the project directory")
 ##
-# Create a dictionary
+#
 args = vars(ag.parse_args())
 arg_file = args["file"]
 arg_references = args["ref"]
 email = str(args["email"])
 map_tool = str(args["mapping"])
+directory = str(args["directory"])
 ##### Functions #####
 # Function to open a csv file
 # With this function, we are only open the file
@@ -245,7 +246,7 @@ def pipeline(smpls_ID):
 ## OPEN FILE ##
 matrix_csv = opencsv(arg_file)
 references_csv = opencsv(arg_references)
-wd_project = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1"
+wd_project = directory
 ## IDs & NAMES ##
 smpls_ID = extcol(matrix_csv, "#ID")
 wd_ref = extcol(references_csv, "RefPath")[0]
