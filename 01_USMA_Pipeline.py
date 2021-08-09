@@ -95,7 +95,7 @@ def pipeline(smpls_ID):
     sge_name = save_sge + "/" + fecha + ".sge"
     sge = open(sge_name, "w")
     header(smpls_ID,sge)
-    genom_ref = wd_ref + "/" + ref_name + ".fa"
+    #genom_ref = wd_ref + "/" + ref_name + ".fa"
     ## Mapping requirements
     ## Paths
     #bam_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/data/bam"
@@ -236,11 +236,11 @@ pyout_name = os.path.normpath(pyout_name)
 pyoutput = open(pyout_name, "a+")
 for i in range(0, len(smpls_ID)):
     ID = smpls_ID[i]
-    lng_name = extcol(matrix_csv, "LongName")[i]
-    shrt_name = extcol(matrix_csv, "ShortName")[i]
-    read_1 = extcol(matrix_csv, "Read1")[i]
-    read_2 = extcol(matrix_csv, "Read2")[i]
-    ref_name = extcol(references_csv, "RefName")[0]
+    #lng_name = extcol(matrix_csv, "LongName")[i]
+    #shrt_name = extcol(matrix_csv, "ShortName")[i]
+    #read_1 = extcol(matrix_csv, "Read1")[i]
+    #read_2 = extcol(matrix_csv, "Read2")[i]
+    #ref_name = extcol(references_csv, "RefName")[0]
     sge = pipeline(ID)
     #print(tiempo, file = pyoutput)
     #subprocess.run(["qsub",sge], stdout=pyoutput, stderr=subprocess.STDOUT, shell=False, cwd=None, timeout=None, check=True, encoding=None, errors=None, text=None, env=None, universal_newlines=None)
