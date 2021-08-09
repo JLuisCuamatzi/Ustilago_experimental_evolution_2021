@@ -32,6 +32,7 @@ ag.add_argument("-f", "--file", default = "", help = "csv with information of ID
 #ag.add_argument("-m", "--mapping", default = "BWA", help = "mapping tool. BWA or Bowtie2 (B2)")
 # agregar un ardgumento para el working directory
 ag.add_argument("-d", "--directory", default = "/home/jcuamatzi", help = "path to the project directory")
+ag.add_argument("-t", "--task", default = "", help = "Task")
 ##
 #
 args = vars(ag.parse_args())
@@ -40,6 +41,7 @@ arg_file = args["file"]
 #email = str(args["email"])
 #map_tool = str(args["mapping"])
 directory = str(args["directory"])
+task = str(args["task"])
 ##### Functions #####
 # Function to open a csv file
 # With this function, we are only open the file
@@ -76,8 +78,8 @@ def extcol (array, header):
 #
 #def header(smpls_ID, sge):
 def header(smpls_ID,sge):
-    path_error = wd_project + "/log_error_Test1"
-    path_out = wd_project + "/log_out_Test1"
+    path_error = wd_project + "/log/" + task + "/error/"
+    path_out = wd_project + "/log/" + task + "/out/"
     if not os.path.exists(path_error):
         os.makedirs(path_error)
     if not os.path.exists(path_out):
@@ -89,10 +91,10 @@ def header(smpls_ID,sge):
     print ("##", file = sge)
 
 def pipeline(smpls_ID):
-    save_sge = wd_project + "/bin/SGE/01_mapping"
+    save_sge = wd_project + "/bin/SGE/" + task + "/"
     if not os.path.exists(save_sge):    
         os.makedirs(save_sge)
-    sge_name = save_sge + "/" + fecha + ".sge"
+    sge_name = save_sge + "/" + fecha + "_" + smpls_ID + ".sge"
     sge = open(sge_name, "w")
     header(smpls_ID,sge)
     #genom_ref = wd_ref + "/" + ref_name + ".fa"
