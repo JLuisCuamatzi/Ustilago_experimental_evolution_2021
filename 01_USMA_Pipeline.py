@@ -28,7 +28,7 @@ ag = argparse.ArgumentParser(
     usage = "python3 Practice_script.py -f ~/USMA_ExpEvo_Samples.csv")
 ag.add_argument("-f", "--file", default = "", help = "csv with information of ID") # to read a csv file with sample imformation
 ag.add_argument("-n", "--email", default = "jorge_l.1@hotmail.com", help = "If you want to receive a notification when the process is done") 
-#ag.add_argument("-r", "--ref", default = "", help = "csv file with the data of the references to map to")
+ag.add_argument("-r", "--ref", default = "", help = "csv file with the data of the references to map to")
 ag.add_argument("-m", "--mapping", default = "BWA", help = "mapping tool. BWA or Bowtie2 (B2)")
 # agregar un ardgumento para el working directory
 ag.add_argument("-d", "--directory", default = "/home/jcuamatzi", help = "path to the project directory")
@@ -37,7 +37,7 @@ ag.add_argument("-t", "--task", default = "", help = "Task")
 #
 args = vars(ag.parse_args())
 arg_file = args["file"]
-#arg_references = args["ref"]
+arg_reference = args["ref"]
 email = str(args["email"])
 map_tool = str(args["mapping"])
 directory = str(args["directory"])
@@ -119,7 +119,7 @@ def pipeline(smpls_ID):
     sge_name = save_sge + "/" + fecha + "_" + smpls_ID + ".sge"
     sge = open(sge_name, "w")
     header(smpls_ID,sge)
-    #genom_ref = wd_ref + "/" + ref_name + ".fa"
+    #reference_genome = wd_ref + "/" + ref_name + ".fa"
     ## Mapping requirements
     ## Paths
     #bam_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/data/bam"
@@ -200,20 +200,21 @@ def pipeline(smpls_ID):
     #print ('''start=$(date +%s.%N)''', file = sge)
     #print ("## MAPPING ", file = sge )
     #if map_tool == "BWA" or map_tool == "bwa":
-    #    print ("bwa mem -M -t10 " + genom_ref + " " + clean_R1 + " " + clean_R2 + " | samtools view -hbS - | samtools sort -o " + bam_path + "/" + bam_name + " -", file = sge)
+    #    print ("bwa mem -M -t10 " + reference_genome + " " + clean_R1 + " " + clean_R2 + " | samtools view -hbS - | samtools sort -o " + bam_path + "/" + bam_name + " -", file = sge)
     #elif map_tool == "B2" or map_tool == "Bowtie2":
-    #    print ("bowtie2 -t --no-mixed --threads 10 -x " + genom_ref + " -1 " + clean_R1 + " -2 " + clean_R2 + " -S " + sam_path + "/" + sam_name, file = sge)
+    #    print ("bowtie2 -t --no-mixed --threads 10 -x " + reference_genome + " -1 " + clean_R1 + " -2 " + clean_R2 + " -S " + sam_path + "/" + sam_name, file = sge)
     #else:
     #    sys.exit("No mapping tool selected, bye-bye")
     print ("#", file = sge)
     print ("this program works in the next directory:" + directory, file = sge)
+    print ("the reference is located in:" + wd_ref, file = sge)
     # print ("picard ValidateSamFile I=" + bam_path + "/" + bam_name + " MODE=SUMMARY O=" + bam_stats_path + "/" + bam_stat_name, file = sge)
     # print ("#", file = sge)
-    # print ("picard CollectGcBiasMetrics R=" + genom_ref + " I=" + bam_path + "/" + bam_name + " O=" + stats_GC_path + "/" + GCBias_name + " CHART=" + fig_GCpdf_path + "/" + GCBias_pdf + " ASSUME_SORTED=true SUMMARY_OUTPUT=" + summ_stats_path + "/" + smmry_name + " VALIDATION_STRINGENCY=LENIENT", file = sge)
+    # print ("picard CollectGcBiasMetrics R=" + reference_genome + " I=" + bam_path + "/" + bam_name + " O=" + stats_GC_path + "/" + GCBias_name + " CHART=" + fig_GCpdf_path + "/" + GCBias_pdf + " ASSUME_SORTED=true SUMMARY_OUTPUT=" + summ_stats_path + "/" + smmry_name + " VALIDATION_STRINGENCY=LENIENT", file = sge)
     # print ("#", file = sge)
-    # print ("picard MeanQualityByCycle R=" + genom_ref + " I=" + bam_path + "/" + bam_name + " O=" + Qcycle_stats_path + "/" + Qcyc_name + " CHART=" + fig_Qcycle_path + "/" + Qcyc_pdf + " VALIDATION_STRINGENCY=LENIENT", file = sge)
+    # print ("picard MeanQualityByCycle R=" + reference_genome + " I=" + bam_path + "/" + bam_name + " O=" + Qcycle_stats_path + "/" + Qcyc_name + " CHART=" + fig_Qcycle_path + "/" + Qcyc_pdf + " VALIDATION_STRINGENCY=LENIENT", file = sge)
     # print ("#", file = sge)
-    # print ("picard QualityScoreDistribution R=" + genom_ref + " I=" + bam_path + "/" + bam_name + " O=" + Qdist_stats_path + "/" + Qdist_name + " CHART=" + fig_Qdist_path + "/" + Qdist_pdf + " VALIDATION_STRINGENCY=LENIENT", file =sge)
+    # print ("picard QualityScoreDistribution R=" + reference_genome + " I=" + bam_path + "/" + bam_name + " O=" + Qdist_stats_path + "/" + Qdist_name + " CHART=" + fig_Qdist_path + "/" + Qdist_pdf + " VALIDATION_STRINGENCY=LENIENT", file =sge)
     # print ("#", file = sge)
     # print ("picard MarkDuplicates INPUT=" + bam_path + "/" + bam_name + " OUTPUT=" + bam_path + "/" + bam_mrkdup_name + " METRICS_FILE=" + dupMtrx_stats_path + "/" + dupMtrx + " VALIDATION_STRINGENCY=LENIENT", file = sge)
     # print ("#", file = sge)
@@ -248,11 +249,11 @@ def pipeline(smpls_ID):
 ##### MAIN #####
 ## OPEN FILE ##
 matrix_csv = opencsv(arg_file)
-#references_csv = opencsv(arg_references)
+reference_csv = opencsv(arg_reference)
 wd_project = directory
 ## IDs & NAMES ##
 smpls_ID = extcol(matrix_csv, "#ID")
-#wd_ref = extcol(references_csv, "RefPath")[0]
+wd_ref = extcol(reference_csv, "RefPath")[0]
 pyout_name = wd_project + "/log/mapping/"+fecha+"/python/" + tiempo + "_Mapping_py.out"
 if not os.path.exists(wd_project + "/log/mapping/"+fecha+"/python/"):
             os.makedirs(wd_project + "/log/mapping/"+fecha+"/python/")
@@ -262,7 +263,7 @@ for i in range(0, len(smpls_ID)):
     ID = smpls_ID[i]    
     #read_1 = extcol(matrix_csv, "Read1")[i]
     #read_2 = extcol(matrix_csv, "Read2")[i]
-    #ref_name = extcol(references_csv, "RefName")[0]
+    #ref_name = extcol(reference_csv, "RefName")[0]
     sge = pipeline(ID)
     #print(tiempo, file = pyoutput)
     #subprocess.run(["qsub",sge], stdout=pyoutput, stderr=subprocess.STDOUT, shell=False, cwd=None, timeout=None, check=True, encoding=None, errors=None, text=None, env=None, universal_newlines=None)
