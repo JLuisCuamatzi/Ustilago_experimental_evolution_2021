@@ -254,9 +254,9 @@ wd_project = directory
 ## IDs & NAMES ##
 smpls_ID = extcol(matrix_csv, "#ID")
 wd_ref = extcol(reference_csv, "RefPath")[0]
-pyout_name = wd_project + "/log/mapping/"+fecha+"/python/" + tiempo + "_Mapping_py.out"
-if not os.path.exists(wd_project + "/log/mapping/"+fecha+"/python/"):
-            os.makedirs(wd_project + "/log/mapping/"+fecha+"/python/")
+pyout_name = wd_project + "/bin/scripts/log/" + task + "/" + fecha + "_" + task + "_py.out"
+if not os.path.exists(wd_project + "/bin/scripts/log/" + task + "/"):
+            os.makedirs(wd_project + "/bin/scripts/log/" + task + "/")
 pyout_name = os.path.normpath(pyout_name)
 pyoutput = open(pyout_name, "a+")
 for i in range(0, len(smpls_ID)):
