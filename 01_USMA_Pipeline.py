@@ -30,6 +30,8 @@ ag.add_argument("-f", "--file", default = "", help = "csv with information of ID
 ag.add_argument("-n", "--email", help = "If you want to receive a notification when the process is done") 
 ag.add_argument("-r", "--ref", default = "", help = "csv file with the data of the references to map to")
 ag.add_argument("-m", "--mapping", default = "BWA", help = "mapping tool. BWA or Bowtie2 (B2)")
+# agregar un ardgumento para el working directory
+ag.add_argument("-d", "--directory", default = "/home/jcuamatiz", help = "path to the project directory")
 ##
 # Create a dictionary
 args = vars(ag.parse_args())
