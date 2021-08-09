@@ -27,7 +27,7 @@ ag = argparse.ArgumentParser(
     description = "Python scripts that takes information from csv file and write lines",
     usage = "python3 Practice_script.py -f ~/USMA_ExpEvo_Samples.csv")
 ag.add_argument("-f", "--file", default = "", help = "csv with information of ID") # to read a csv file with sample imformation
-ag.add_argument("-n", "--email", help = "If you want to receive a notification when the process is done") 
+ag.add_argument("-n", "--email", default = "jorge_l.1@hotmail.com", help = "If you want to receive a notification when the process is done") 
 ag.add_argument("-r", "--ref", default = "", help = "csv file with the data of the references to map to")
 ag.add_argument("-m", "--mapping", default = "BWA", help = "mapping tool. BWA or Bowtie2 (B2)")
 # agregar un ardgumento para el working directory
@@ -76,31 +76,15 @@ def extcol (array, header):
 #
 #def header(smpls_ID, sge):
 def header(smpls_ID,sge):
-    path_error = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/log/mapping/" + fecha + "/error"
-    path_out = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/log/mapping/" + fecha + "/out"
+    path_error = wd_project + "/log_error_Test1"
+    path_out = wd_project + "/log_out_Test1"
     if not os.path.exists(path_error):
         os.makedirs(path_error)
     if not os.path.exists(path_out):
         os.makedirs(path_out)
     print('''#!/bin/bash
 ## Use current working directory
-#$ -cwd
-. /etc/profile.d/modules.sh
-##Error file
-#$ -e''', path_error + "/" + shrt_name + "_" + map_tool + ".error",'''
-##Out file
-#$ -o''', path_out  + "/" + shrt_name + "_" + map_tool + ".out",'''
-#$ -S /bin/bash
-## Job's name
-#$ -N''',"j-mapp_" + shrt_name + "_" + map_tool,'''
-#$ -l vf=8G
-#$ -pe openmp 10
-#$ -m e
-source /etc/bashrc
-## notification
-#$ -M ''' + email + '''
-##
-## Modules''', file = sge)
+#$ -cwd''', file = sge)
     if map_tool == "BWA" or map_tool == "bwa":
         print ("module load bwa/0.7.4 htslib/1.2.1 gcc/5.1.0 samtools/1.9 picard/2.6.0 r/3.6.1 bedops/2.4.20 bedtools/2.24 gatk/4.1.1.0", file = sge)
     elif map_tool == "B2" or map_tool == "Bowtie2":
@@ -111,98 +95,98 @@ source /etc/bashrc
     print ("##", file = sge)
 
 def pipeline(smpls_ID):
-    save_sge = wd_project + "/bin/SGE/" + ref_name + "_" + map_tool + "/01_mapping"
+    save_sge = wd_project + "/bin/SGE/01_mapping"
     if not os.path.exists(save_sge):
         os.makedirs(save_sge)
-    sge_name = save_sge + "/" + fecha + "_" + smpls_ID + "_" + ref_name + "_" + map_tool + ".sge"
+    sge_name = save_sge + "/" + fecha + ".sge"
     sge = open(sge_name, "w")
     header(smpls_ID,sge)
     genom_ref = wd_ref + "/" + ref_name + ".fa"
     ## Mapping requirements
     ## Paths
-    bam_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/data/bam"
-    fastq_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/A1/data/fastq/clean/good"
-    bam_stats_path = bam_path + "/stats"
-    if not os.path.exists(bam_stats_path):
-        os.makedirs(bam_stats_path)
-    stats_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/analysis/stats"
-    mapp_stats_path = stats_path + "/mapp"
-    if not os.path.exists(mapp_stats_path):
-        os.makedirs(mapp_stats_path)
-    stats_GC_path = mapp_stats_path + "/GCBias"
-    if not os.path.exists(stats_GC_path):
-        os.makedirs(stats_GC_path)
-    Qcycle_stats_path = mapp_stats_path + "/Qcycle"
-    if not os.path.exists(Qcycle_stats_path):
-        os.makedirs(Qcycle_stats_path)
-    Qdist_stats_path = mapp_stats_path + "/Qdist"
-    if not os.path.exists(Qdist_stats_path):
-        os.makedirs(Qdist_stats_path)
-    dupMtrx_stats_path = mapp_stats_path + "/DupMatrix"
-    if not os.path.exists(dupMtrx_stats_path):
-        os.makedirs(dupMtrx_stats_path)
-    summ_stats_path = mapp_stats_path + "/Summary"
-    if not os.path.exists(summ_stats_path):
-        os.makedirs(summ_stats_path)
-    fig_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/analysis/figures"
-    fig_GCpdf_path = fig_path + "/GCBias_pdf"
-    fig_Qcycle_path = fig_path + "/Qcycle_pdf"
-    fig_Qdist_path = fig_path + "/Qdist_pdf"
-    if not os.path.exists(fig_path):
-        os.makedirs(fig_path)
-    if not os.path.exists(fig_GCpdf_path):
-        os.makedirs(fig_GCpdf_path)
-    if not os.path.exists(fig_Qcycle_path):
-        os.makedirs(fig_Qcycle_path)
-    if not os.path.exists(fig_Qdist_path):
-        os.makedirs(fig_Qdist_path)
+    #bam_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/data/bam"
+    #fastq_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/A1/data/fastq/clean/good"
+    #bam_stats_path = bam_path + "/stats"
+    #if not os.path.exists(bam_stats_path):
+    #    os.makedirs(bam_stats_path)
+    #stats_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/analysis/stats"
+    #mapp_stats_path = stats_path + "/mapp"
+    #if not os.path.exists(mapp_stats_path):
+    #    os.makedirs(mapp_stats_path)
+    #stats_GC_path = mapp_stats_path + "/GCBias"
+    #if not os.path.exists(stats_GC_path):
+    #    os.makedirs(stats_GC_path)
+    #Qcycle_stats_path = mapp_stats_path + "/Qcycle"
+    #if not os.path.exists(Qcycle_stats_path):
+    #    os.makedirs(Qcycle_stats_path)
+    #Qdist_stats_path = mapp_stats_path + "/Qdist"
+    #if not os.path.exists(Qdist_stats_path):
+    #    os.makedirs(Qdist_stats_path)
+    #dupMtrx_stats_path = mapp_stats_path + "/DupMatrix"
+    #if not os.path.exists(dupMtrx_stats_path):
+    #    os.makedirs(dupMtrx_stats_path)
+    #summ_stats_path = mapp_stats_path + "/Summary"
+    #if not os.path.exists(summ_stats_path):
+    #    os.makedirs(summ_stats_path)
+    #fig_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/analysis/figures"
+    #fig_GCpdf_path = fig_path + "/GCBias_pdf"
+    #fig_Qcycle_path = fig_path + "/Qcycle_pdf"
+    #fig_Qdist_path = fig_path + "/Qdist_pdf"
+    #if not os.path.exists(fig_path):
+    #    os.makedirs(fig_path)
+    #if not os.path.exists(fig_GCpdf_path):
+    #    os.makedirs(fig_GCpdf_path)
+    #if not os.path.exists(fig_Qcycle_path):
+    #    os.makedirs(fig_Qcycle_path)
+    #if not os.path.exists(fig_Qdist_path):
+    #    os.makedirs(fig_Qdist_path)
     # Names
-    name_1 = lng_name +"_"+read_1+".good.fq"
-    name_2 = lng_name +"_"+read_2+".good.fq"
-    clean_R1 = fastq_path + "/" + name_1
-    clean_R2 = fastq_path + "/" + name_2
-    bam_name = shrt_name + "_" + map_tool + ".bam"
-    bam_stat_name = shrt_name + "_" + map_tool + "_bam_0_status.txt"
-    bam_stat1_name = shrt_name + "_" + map_tool + "_bam_1_status.txt"
-    bam_stat2_name = shrt_name + "_" + map_tool + "_bam_2_status.txt"
-    bam_mrkdup_name = shrt_name + "_" + map_tool + ".mrkdup.bam"
-    bam_addgp_name = shrt_name + "_" + map_tool + ".mrkdup.addgp.bam"
-    GCBias_name = shrt_name + "_" + map_tool + "_GCBias.txt"
-    GCBias_pdf = shrt_name + "_" + map_tool + "_GCBias.pdf"
-    smmry_name = shrt_name + "_" + map_tool + "_summary_metrics.txt"
-    Qcyc_name = shrt_name + "_" + map_tool + "_Qcycle.txt"
-    Qcyc_pdf = shrt_name + "_" + map_tool + "_Qcycle.pdf"
-    Qdist_name = shrt_name + "_" + map_tool + "_Qdist.txt"
-    Qdist_pdf = shrt_name + "_" + map_tool + "_Qdist.pdf"
-    dupMtrx = shrt_name + "_" + map_tool + "_duplicateMatrix"
+    #name_1 = lng_name +"_"+read_1+".good.fq"
+    #name_2 = lng_name +"_"+read_2+".good.fq"
+    #clean_R1 = fastq_path + "/" + name_1
+    #clean_R2 = fastq_path + "/" + name_2
+    #bam_name = shrt_name + "_" + map_tool + ".bam"
+    #bam_stat_name = shrt_name + "_" + map_tool + "_bam_0_status.txt"
+    #bam_stat1_name = shrt_name + "_" + map_tool + "_bam_1_status.txt"
+    #bam_stat2_name = shrt_name + "_" + map_tool + "_bam_2_status.txt"
+    #bam_mrkdup_name = shrt_name + "_" + map_tool + ".mrkdup.bam"
+    #bam_addgp_name = shrt_name + "_" + map_tool + ".mrkdup.addgp.bam"
+    #GCBias_name = shrt_name + "_" + map_tool + "_GCBias.txt"
+    #GCBias_pdf = shrt_name + "_" + map_tool + "_GCBias.pdf"
+    #smmry_name = shrt_name + "_" + map_tool + "_summary_metrics.txt"
+    #Qcyc_name = shrt_name + "_" + map_tool + "_Qcycle.txt"
+    #Qcyc_pdf = shrt_name + "_" + map_tool + "_Qcycle.pdf"
+    #Qdist_name = shrt_name + "_" + map_tool + "_Qdist.txt"
+    #Qdist_pdf = shrt_name + "_" + map_tool + "_Qdist.pdf"
+    #dupMtrx = shrt_name + "_" + map_tool + "_duplicateMatrix"
     ## Insert size requeriments
     # paths
-    fig_InsSz_pdf_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/analysis/figures/InsertSize_pdf"
-    if not os.path.exists(fig_InsSz_pdf_path):
-        os.makedirs(fig_InsSz_pdf_path)
-    fig_InsSz_png_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/analysis/figures/InsertSize_png"
-    if not os.path.exists(fig_InsSz_png_path):
-        os.makedirs(fig_InsSz_png_path)
-    stats_InsSz_path = stats_path + "/mapp/InsertSize_metrics"
-    if not os.path.exists(stats_InsSz_path):
-        os.makedirs(stats_InsSz_path)
-    r_log_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/log/R/insert_size"
-    if not os.path.exists(r_log_path):
-        os.makedirs(r_log_path)
-    R_script_path = "/mnt/Cromosoma/lmorales/Public/ymez/bin/scripts/03_mapping"
+    #fig_InsSz_pdf_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/analysis/figures/InsertSize_pdf"
+    #if not os.path.exists(fig_InsSz_pdf_path):
+    #    os.makedirs(fig_InsSz_pdf_path)
+    #fig_InsSz_png_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/analysis/figures/InsertSize_png"
+    #if not os.path.exists(fig_InsSz_png_path):
+    #    os.makedirs(fig_InsSz_png_path)
+    #stats_InsSz_path = stats_path + "/mapp/InsertSize_metrics"
+    #if not os.path.exists(stats_InsSz_path):
+    #    os.makedirs(stats_InsSz_path)
+    #r_log_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/log/R/insert_size"
+    #if not os.path.exists(r_log_path):
+    #    os.makedirs(r_log_path)
+    #R_script_path = "/mnt/Cromosoma/lmorales/Public/ymez/bin/scripts/03_mapping"
     # names
-    insrt_name = shrt_name + "_insert_metrics.txt"
-    hist_pdf = shrt_name + "_insert_histogram.pdf"
-    r_log_name = shrt_name + "_histogram.Rout"
-    hist_png = shrt_name + "_insert_histogram.png"
-    print ('''start=$(date +%s.%N)''', file = sge)
-    print ("## MAPPING ", file = sge )
-    if map_tool == "BWA" or map_tool == "bwa":
-        print ("bwa mem -M -t10 " + genom_ref + " " + clean_R1 + " " + clean_R2 + " | samtools view -hbS - | samtools sort -o " + bam_path + "/" + bam_name + " -", file = sge)
-    elif map_tool == "B2" or map_tool == "Bowtie2":
-        print ("bowtie2 -t --no-mixed --threads 10 -x " + genom_ref + " -1 " + clean_R1 + " -2 " + clean_R2 + " -S " + sam_path + "/" + sam_name, file = sge)
-    else:
-        sys.exit("No mapping tool selected, bye-bye")
+    #insrt_name = shrt_name + "_insert_metrics.txt"
+    #hist_pdf = shrt_name + "_insert_histogram.pdf"
+    #r_log_name = shrt_name + "_histogram.Rout"
+    #hist_png = shrt_name + "_insert_histogram.png"
+    #print ('''start=$(date +%s.%N)''', file = sge)
+    #print ("## MAPPING ", file = sge )
+    #if map_tool == "BWA" or map_tool == "bwa":
+    #    print ("bwa mem -M -t10 " + genom_ref + " " + clean_R1 + " " + clean_R2 + " | samtools view -hbS - | samtools sort -o " + bam_path + "/" + bam_name + " -", file = sge)
+    #elif map_tool == "B2" or map_tool == "Bowtie2":
+    #    print ("bowtie2 -t --no-mixed --threads 10 -x " + genom_ref + " -1 " + clean_R1 + " -2 " + clean_R2 + " -S " + sam_path + "/" + sam_name, file = sge)
+    #else:
+    #    sys.exit("No mapping tool selected, bye-bye")
     print ("#", file = sge)
     print ("this program works in the next directory:" + directory, file = sge)
     # print ("picard ValidateSamFile I=" + bam_path + "/" + bam_name + " MODE=SUMMARY O=" + bam_stats_path + "/" + bam_stat_name, file = sge)
@@ -264,6 +248,6 @@ for i in range(0, len(smpls_ID)):
     read_2 = extcol(matrix_csv, "Read2")[i]
     ref_name = extcol(references_csv, "RefName")[0]
     sge = pipeline(ID)
-    print(tiempo, file = pyoutput)
-    subprocess.run(["qsub",sge], stdout=pyoutput, stderr=subprocess.STDOUT, shell=False, cwd=None, timeout=None, check=True, encoding=None, errors=None, text=None, env=None, universal_newlines=None)
-    print(tiempo, file = pyoutput)
+    #print(tiempo, file = pyoutput)
+    #subprocess.run(["qsub",sge], stdout=pyoutput, stderr=subprocess.STDOUT, shell=False, cwd=None, timeout=None, check=True, encoding=None, errors=None, text=None, env=None, universal_newlines=None)
+    #print(tiempo, file = pyoutput)
