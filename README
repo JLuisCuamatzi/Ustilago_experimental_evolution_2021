@@ -20,7 +20,7 @@ $ git add 01_USMA_Pipeline.py
 
 $ git status -s
 
-$ git tag # para crear tags
+$ git tag DATEv.X -m "Comentario" # para crear tags
 
 $ git push -u origin master
 
