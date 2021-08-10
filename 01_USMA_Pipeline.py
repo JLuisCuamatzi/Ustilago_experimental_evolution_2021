@@ -136,32 +136,32 @@ def pipeline(smpls_ID):
     if not os.path.exists(mapp_stats_path):
         os.makedirs(mapp_stats_path)
     stats_GC_path = mapp_stats_path + "GCBias/"
-    #if not os.path.exists(stats_GC_path):
-    #    os.makedirs(stats_GC_path)
-    #Qcycle_stats_path = mapp_stats_path + "/Qcycle"
-    #if not os.path.exists(Qcycle_stats_path):
-    #    os.makedirs(Qcycle_stats_path)
-    #Qdist_stats_path = mapp_stats_path + "/Qdist"
-    #if not os.path.exists(Qdist_stats_path):
-    #    os.makedirs(Qdist_stats_path)
-    #dupMtrx_stats_path = mapp_stats_path + "/DupMatrix"
-    #if not os.path.exists(dupMtrx_stats_path):
-    #    os.makedirs(dupMtrx_stats_path)
+    if not os.path.exists(stats_GC_path):
+        os.makedirs(stats_GC_path)
+    Qcycle_stats_path = mapp_stats_path + "Qcycle/"
+    if not os.path.exists(Qcycle_stats_path):
+        os.makedirs(Qcycle_stats_path)
+    Qdist_stats_path = mapp_stats_path + "Qdist/"
+    if not os.path.exists(Qdist_stats_path):
+        os.makedirs(Qdist_stats_path)
+    dupMtrx_stats_path = mapp_stats_path + "DupMatrix/"
+    if not os.path.exists(dupMtrx_stats_path):
+        os.makedirs(dupMtrx_stats_path)
     summ_stats_path = mapp_stats_path + "Summary/"
     if not os.path.exists(summ_stats_path):
         os.makedirs(summ_stats_path)
     fig_path = wd_project + "analysis/figures/"
     fig_GCpdf_path = fig_path + "GCBias_pdf/"
-    #fig_Qcycle_path = fig_path + "/Qcycle_pdf"
-    #fig_Qdist_path = fig_path + "/Qdist_pdf"
-    #if not os.path.exists(fig_path):
-    #    os.makedirs(fig_path)
+    fig_Qcycle_path = fig_path + "Qcycle_pdf/"
+    fig_Qdist_path = fig_path + "Qdist_pdf/"
+    if not os.path.exists(fig_path):
+        os.makedirs(fig_path)
     if not os.path.exists(fig_GCpdf_path):
         os.makedirs(fig_GCpdf_path)
-    #if not os.path.exists(fig_Qcycle_path):
-    #    os.makedirs(fig_Qcycle_path)
-    #if not os.path.exists(fig_Qdist_path):
-    #    os.makedirs(fig_Qdist_path)
+    if not os.path.exists(fig_Qcycle_path):
+        os.makedirs(fig_Qcycle_path)
+    if not os.path.exists(fig_Qdist_path):
+        os.makedirs(fig_Qdist_path)
     # Names
     #name_1 = smpls_ID + "_" + read_1 + ".good.fq"
     name_1 = smpls_ID + "_R1.good.fq"
@@ -173,37 +173,37 @@ def pipeline(smpls_ID):
     bam_stat_name = smpls_ID + "_" + map_tool + "_bam_0_status.txt"
     bam_stat1_name = smpls_ID + "_" + map_tool + "_bam_1_status.txt"
     bam_stat2_name = smpls_ID + "_" + map_tool + "_bam_2_status.txt"
-    #bam_mrkdup_name = shrt_name + "_" + map_tool + ".mrkdup.bam"
-    #bam_addgp_name = shrt_name + "_" + map_tool + ".mrkdup.addgp.bam"
+    bam_mrkdup_name = smpls_ID + "_" + map_tool + ".mrkdup.bam"
+    bam_addgp_name = smpls_ID + "_" + map_tool + ".mrkdup.addgp.bam"
     GCBias_name = smpls_ID + "_" + map_tool + "_GCBias.txt"
     GCBias_pdf = smpls_ID + "_" + map_tool + "_GCBias.pdf"
     smmry_name = smpls_ID + "_" + map_tool + "_summary_metrics.txt"
-    #Qcyc_name = shrt_name + "_" + map_tool + "_Qcycle.txt"
-    #Qcyc_pdf = shrt_name + "_" + map_tool + "_Qcycle.pdf"
-    #Qdist_name = shrt_name + "_" + map_tool + "_Qdist.txt"
-    #Qdist_pdf = shrt_name + "_" + map_tool + "_Qdist.pdf"
-    #dupMtrx = shrt_name + "_" + map_tool + "_duplicateMatrix"
+    Qcyc_name = smpls_ID + "_" + map_tool + "_Qcycle.txt"
+    Qcyc_pdf = smpls_ID + "_" + map_tool + "_Qcycle.pdf"
+    Qdist_name = smpls_ID + "_" + map_tool + "_Qdist.txt"
+    Qdist_pdf = smpls_ID + "_" + map_tool + "_Qdist.pdf"
+    dupMtrx = smpls_ID + "_" + map_tool + "_duplicateMatrix"
     ## Insert size requeriments
     # paths
-    #fig_InsSz_pdf_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/analysis/figures/InsertSize_pdf"
-    #if not os.path.exists(fig_InsSz_pdf_path):
-    #    os.makedirs(fig_InsSz_pdf_path)
-    #fig_InsSz_png_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/analysis/figures/InsertSize_png"
-    #if not os.path.exists(fig_InsSz_png_path):
-    #    os.makedirs(fig_InsSz_png_path)
-    #stats_InsSz_path = stats_path + "/mapp/InsertSize_metrics"
-    #if not os.path.exists(stats_InsSz_path):
-    #    os.makedirs(stats_InsSz_path)
-    #r_log_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/log/R/insert_size"
-    #if not os.path.exists(r_log_path):
-    #    os.makedirs(r_log_path)
-    #R_script_path = "/mnt/Cromosoma/lmorales/Public/ymez/bin/scripts/03_mapping"
+    fig_InsSz_pdf_path = wd_project + "InsertSize_pdf/"
+    if not os.path.exists(fig_InsSz_pdf_path):
+        os.makedirs(fig_InsSz_pdf_path)
+    fig_InsSz_png_path = wd_project + "InsertSize_png/"
+    if not os.path.exists(fig_InsSz_png_path):
+        os.makedirs(fig_InsSz_png_path)
+    stats_InsSz_path = stats_path + "mapp/InsertSize_metrics/"
+    if not os.path.exists(stats_InsSz_path):
+        os.makedirs(stats_InsSz_path)
+    r_log_path = wd_project + "log/R/insert_size/"
+    if not os.path.exists(r_log_path):
+        os.makedirs(r_log_path)
+    R_script_path = "/mnt/Timina/lmorales/Public/ymez/bin/scripts/03_mapping"
     # names
-    #insrt_name = shrt_name + "_insert_metrics.txt"
-    #hist_pdf = shrt_name + "_insert_histogram.pdf"
-    #r_log_name = shrt_name + "_histogram.Rout"
-    #hist_png = shrt_name + "_insert_histogram.png"
-    #print ('''start=$(date +%s.%N)''', file = sge)
+    insrt_name = smpls_ID + "_insert_metrics.txt"
+    hist_pdf = smpls_ID + "_insert_histogram.pdf"
+    r_log_name = smpls_ID + "_histogram.Rout"
+    hist_png = smpls_ID + "_insert_histogram.png"
+    print ('''start=$(date +%s.%N)''', file = sge)
     print ("## MAPPING ", file = sge )
     if map_tool == "BWA" or map_tool == "bwa":
         print ("bwa mem -M -t10 " + reference_genome + " " + clean_R1 + " " + clean_R2 + " | samtools view -hbS - | samtools sort -o " + bam_path + bam_name + " -", file = sge)
@@ -219,31 +219,31 @@ def pipeline(smpls_ID):
     print ("#", file = sge)
     print ("picard CollectGcBiasMetrics R=" + reference_genome + " I=" + bam_path + bam_name + " O=" + stats_GC_path + GCBias_name + " CHART=" + fig_GCpdf_path + GCBias_pdf + " ASSUME_SORTED=true SUMMARY_OUTPUT=" + summ_stats_path + "/" + smmry_name + " VALIDATION_STRINGENCY=LENIENT", file = sge)
     print ("#", file = sge)
-    # print ("picard MeanQualityByCycle R=" + reference_genome + " I=" + bam_path + "/" + bam_name + " O=" + Qcycle_stats_path + "/" + Qcyc_name + " CHART=" + fig_Qcycle_path + "/" + Qcyc_pdf + " VALIDATION_STRINGENCY=LENIENT", file = sge)
+    print ("picard MeanQualityByCycle R=" + reference_genome + " I=" + bam_path + bam_name + " O=" + Qcycle_stats_path + Qcyc_name + " CHART=" + fig_Qcycle_path + Qcyc_pdf + " VALIDATION_STRINGENCY=LENIENT", file = sge)
     print ("#", file = sge)
-    # print ("picard QualityScoreDistribution R=" + reference_genome + " I=" + bam_path + "/" + bam_name + " O=" + Qdist_stats_path + "/" + Qdist_name + " CHART=" + fig_Qdist_path + "/" + Qdist_pdf + " VALIDATION_STRINGENCY=LENIENT", file =sge)
+    print ("picard QualityScoreDistribution R=" + reference_genome + " I=" + bam_path + bam_name + " O=" + Qdist_stats_path + Qdist_name + " CHART=" + fig_Qdist_path + Qdist_pdf + " VALIDATION_STRINGENCY=LENIENT", file =sge)
     print ("#", file = sge)
-    # print ("picard MarkDuplicates INPUT=" + bam_path + "/" + bam_name + " OUTPUT=" + bam_path + "/" + bam_mrkdup_name + " METRICS_FILE=" + dupMtrx_stats_path + "/" + dupMtrx + " VALIDATION_STRINGENCY=LENIENT", file = sge)
+    print ("picard MarkDuplicates INPUT=" + bam_path + bam_name + " OUTPUT=" + bam_path + bam_mrkdup_name + " METRICS_FILE=" + dupMtrx_stats_path + dupMtrx + " VALIDATION_STRINGENCY=LENIENT", file = sge)
     print ("#", file = sge)
-    # print ("picard ValidateSamFile I=" + bam_path + "/" + bam_mrkdup_name + " MODE=SUMMARY O=" + bam_stats_path + "/" + bam_stat1_name, file = sge)
+    print ("picard ValidateSamFile I=" + bam_path + bam_mrkdup_name + " MODE=SUMMARY O=" + bam_stats_path + bam_stat1_name, file = sge)
     print ("#", file = sge)
-    # print ("picard AddOrReplaceReadGroups I=" + bam_path + "/" + bam_mrkdup_name + " O=" + bam_path + "/" + bam_addgp_name + " LB=" + shrt_name + " PL=illumina PU=" + shrt_name + " SM=" + shrt_name + " VALIDATION_STRINGENCY=LENIENT", file = sge)
+    print ("picard AddOrReplaceReadGroups I=" + bam_path + bam_mrkdup_name + " O=" + bam_path + bam_addgp_name + " LB=" + smpls_ID + " PL=illumina PU=" + smpls_ID + " SM=" + smpls_ID + " VALIDATION_STRINGENCY=LENIENT", file = sge)
     print ("#", file = sge)
-    # print ("picard ValidateSamFile I=" + bam_path + "/" + bam_addgp_name + " MODE=SUMMARY O=" + bam_stats_path + "/" + bam_stat2_name, file = sge)
+    print ("picard ValidateSamFile I=" + bam_path + bam_addgp_name + " MODE=SUMMARY O=" + bam_stats_path + bam_stat2_name, file = sge)
     print ("#", file = sge)
-    # print ("samtools index " + bam_path + "/" + bam_addgp_name, file = sge)
+    print ("samtools index " + bam_path + bam_addgp_name, file = sge)
     print ("#", file = sge)
-    # print ("if [[ -s " + bam_path + "/" + bam_addgp_name + " ]]; then", file = sge)
-    # print ("rm -f " + bam_path + "/" + bam_mrkdup_name, file = sge)
-    # print ("fi", file = sge)
+    print ("if [[ -s " + bam_path + bam_addgp_name + " ]]; then", file = sge)
+    print ("rm -f " + bam_path + bam_mrkdup_name, file = sge)
+    print ("fi", file = sge)
     print ("## END_MAPPING", file = sge)
     print ("#", file = sge)
     print ("#", file = sge)
     print ("## INSERT SIZE", file = sge )
     print ("#", file = sge)
-    # print ("picard CollectInsertSizeMetrics I=" + bam_path + "/" + bam_addgp_name + " O=" + stats_InsSz_path + "/" + insrt_name + " H=" + fig_InsSz_pdf_path + "/" + hist_pdf + " M=0.5", file = sge)
+    print ("picard CollectInsertSizeMetrics I=" + bam_path + bam_addgp_name + " O=" + stats_InsSz_path + insrt_name + " H=" + fig_InsSz_pdf_path + hist_pdf + " M=0.5", file = sge)
     print ("#", file = sge)
-    # print ('''R CMD BATCH --no-save --no-restore "--args FILE=''' + "'" + stats_InsSz_path + "/" + insrt_name + "'" + " FILE_OUT=" + "'" + fig_InsSz_png_path + "/" + hist_png + "' bamName='" + bam_path + "/" + bam_addgp_name + "'" + '''" ''' + R_script_path + "/insert_histogram.R " + r_log_path + "/" + r_log_name, file = sge)
+    print ('''R CMD BATCH --no-save --no-restore "--args FILE=''' + "'" + stats_InsSz_path + insrt_name + "'" + " FILE_OUT=" + "'" + fig_InsSz_png_path + hist_png + "' bamName='" + bam_path + bam_addgp_name + "'" + '''" ''' + R_script_path + "/insert_histogram.R " + r_log_path + r_log_name, file = sge)
     print ("#", file = sge)
     print ("## END INSERT SIZE", file = sge)
     print ('''duration=$(echo "$(date +%s.%N) - $start" | bc)''', file = sge)
@@ -251,7 +251,7 @@ def pipeline(smpls_ID):
     print ('''echo "Script Execution Time: $execution_time"''', file = sge)
     sge.close()
     return sge_name  
-# Update 09/08/2021
+# Update 10/08/2021
 
 ##### MAIN #####
 ## OPEN FILE ##
