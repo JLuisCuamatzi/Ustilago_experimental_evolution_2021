@@ -108,7 +108,7 @@ source /etc/bashrc
     elif map_tool == "B2" or map_tool == "Bowtie2":
         print ("module load htslib/1.2.1 gcc/5.1.0 samtools/1.9 python37/3.7.0 fastqc/0.11.3 picard/2.6.0 bamtools/2.5.1 bowtie2/2.2.9", file = sge)
     else:
-        sys.exit("No mapping tool selected, bye-bye")
+        sys.exit("No mapping tool selected, Ciao-Ciao")
     print ("##", file = sge)
     print ("##", file = sge)
 
