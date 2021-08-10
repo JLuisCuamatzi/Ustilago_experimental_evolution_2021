@@ -89,9 +89,9 @@ def header(smpls_ID,sge):
 #$ -cwd
 . /etc/profile.d/modules.sh
 ##Error file
-#$ -e''', path_error + "/" + ID + ".error",'''
+#$ -e''', path_error + ID + ".error",'''
 ##Out file
-#$ -o''', path_out  + "/" + smpls_ID + ".out",'''
+#$ -o''', path_out + smpls_ID + ".out",'''
 #$ -S /bin/bash
 ## Job's name
 #$ -N''', task + "_" + ID,'''
@@ -113,7 +113,7 @@ source /etc/bashrc
     print ("##", file = sge)
 
 def pipeline(smpls_ID):
-    save_sge = wd_project + "/bin/SGE/" + task + "/"
+    save_sge = wd_project + "bin/SGE/" + task + "/"
     if not os.path.exists(save_sge):    
         os.makedirs(save_sge)
     sge_name = save_sge + "/" + fecha + "_" + smpls_ID + ".sge"
@@ -122,20 +122,20 @@ def pipeline(smpls_ID):
     reference_genome = wd_ref + "/" + ref_name + ".fa"
     ## Mapping requirements
     ## Paths
-    bam_path = wd_project + "/data/bam/"
-    fastq_path = wd_project + "/data/fastq/"
-    bam_stats_path = bam_path + "/stats"
+    bam_path = wd_project + "data/bam/"
+    fastq_path = wd_project + "data/fastq/"
+    bam_stats_path = bam_path + "stats/"
     if not os.path.exists(bam_path):
         os.makedirs(bam_path)
     if not os.path.exists(fastq_path):
         os.makedirs(fastq_path)
     if not os.path.exists(bam_stats_path):
         os.makedirs(bam_stats_path)
-    #stats_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/analysis/stats"
-    #mapp_stats_path = stats_path + "/mapp"
-    #if not os.path.exists(mapp_stats_path):
-    #    os.makedirs(mapp_stats_path)
-    #stats_GC_path = mapp_stats_path + "/GCBias"
+    stats_path = wd_project + "analysis/stats/"
+    mapp_stats_path = stats_path + "mapp/"
+    if not os.path.exists(mapp_stats_path):
+        os.makedirs(mapp_stats_path)
+    stats_GC_path = mapp_stats_path + "GCBias/"
     #if not os.path.exists(stats_GC_path):
     #    os.makedirs(stats_GC_path)
     #Qcycle_stats_path = mapp_stats_path + "/Qcycle"
@@ -147,35 +147,37 @@ def pipeline(smpls_ID):
     #dupMtrx_stats_path = mapp_stats_path + "/DupMatrix"
     #if not os.path.exists(dupMtrx_stats_path):
     #    os.makedirs(dupMtrx_stats_path)
-    #summ_stats_path = mapp_stats_path + "/Summary"
-    #if not os.path.exists(summ_stats_path):
-    #    os.makedirs(summ_stats_path)
-    #fig_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/analysis/figures"
-    #fig_GCpdf_path = fig_path + "/GCBias_pdf"
+    summ_stats_path = mapp_stats_path + "Summary/"
+    if not os.path.exists(summ_stats_path):
+        os.makedirs(summ_stats_path)
+    fig_path = wd_project + "analysis/figures/"
+    fig_GCpdf_path = fig_path + "GCBias_pdf/"
     #fig_Qcycle_path = fig_path + "/Qcycle_pdf"
     #fig_Qdist_path = fig_path + "/Qdist_pdf"
     #if not os.path.exists(fig_path):
     #    os.makedirs(fig_path)
-    #if not os.path.exists(fig_GCpdf_path):
-    #    os.makedirs(fig_GCpdf_path)
+    if not os.path.exists(fig_GCpdf_path):
+        os.makedirs(fig_GCpdf_path)
     #if not os.path.exists(fig_Qcycle_path):
     #    os.makedirs(fig_Qcycle_path)
     #if not os.path.exists(fig_Qdist_path):
     #    os.makedirs(fig_Qdist_path)
     # Names
-    #name_1 = lng_name +"_"+read_1+".good.fq"
-    #name_2 = lng_name +"_"+read_2+".good.fq"
-    #clean_R1 = fastq_path + "/" + name_1
-    #clean_R2 = fastq_path + "/" + name_2
-    #bam_name = shrt_name + "_" + map_tool + ".bam"
-    #bam_stat_name = shrt_name + "_" + map_tool + "_bam_0_status.txt"
-    #bam_stat1_name = shrt_name + "_" + map_tool + "_bam_1_status.txt"
-    #bam_stat2_name = shrt_name + "_" + map_tool + "_bam_2_status.txt"
+    #name_1 = smpls_ID + "_" + read_1 + ".good.fq"
+    name_1 = smpls_ID + "_R1.good.fq"
+    #name_2 = smpls_ID + "_" + read_2 + ".good.fq"
+    name_2 = smpls_ID + "_R2.good.fq"
+    clean_R1 = fastq_path + name_1
+    clean_R2 = fastq_path + name_2
+    bam_name = smpls_ID + "_" + map_tool + ".bam"
+    bam_stat_name = smpls_ID + "_" + map_tool + "_bam_0_status.txt"
+    bam_stat1_name = smpls_ID + "_" + map_tool + "_bam_1_status.txt"
+    bam_stat2_name = smpls_ID + "_" + map_tool + "_bam_2_status.txt"
     #bam_mrkdup_name = shrt_name + "_" + map_tool + ".mrkdup.bam"
     #bam_addgp_name = shrt_name + "_" + map_tool + ".mrkdup.addgp.bam"
-    #GCBias_name = shrt_name + "_" + map_tool + "_GCBias.txt"
-    #GCBias_pdf = shrt_name + "_" + map_tool + "_GCBias.pdf"
-    #smmry_name = shrt_name + "_" + map_tool + "_summary_metrics.txt"
+    GCBias_name = smpls_ID + "_" + map_tool + "_GCBias.txt"
+    GCBias_pdf = smpls_ID + "_" + map_tool + "_GCBias.pdf"
+    smmry_name = smpls_ID + "_" + map_tool + "_summary_metrics.txt"
     #Qcyc_name = shrt_name + "_" + map_tool + "_Qcycle.txt"
     #Qcyc_pdf = shrt_name + "_" + map_tool + "_Qcycle.pdf"
     #Qdist_name = shrt_name + "_" + map_tool + "_Qdist.txt"
@@ -202,51 +204,51 @@ def pipeline(smpls_ID):
     #r_log_name = shrt_name + "_histogram.Rout"
     #hist_png = shrt_name + "_insert_histogram.png"
     #print ('''start=$(date +%s.%N)''', file = sge)
-    #print ("## MAPPING ", file = sge )
-    #if map_tool == "BWA" or map_tool == "bwa":
-    #    print ("bwa mem -M -t10 " + reference_genome + " " + clean_R1 + " " + clean_R2 + " | samtools view -hbS - | samtools sort -o " + bam_path + "/" + bam_name + " -", file = sge)
-    #elif map_tool == "B2" or map_tool == "Bowtie2":
-    #    print ("bowtie2 -t --no-mixed --threads 10 -x " + reference_genome + " -1 " + clean_R1 + " -2 " + clean_R2 + " -S " + sam_path + "/" + sam_name, file = sge)
-    #else:
-    #    sys.exit("No mapping tool selected, bye-bye")
+    print ("## MAPPING ", file = sge )
+    if map_tool == "BWA" or map_tool == "bwa":
+        print ("bwa mem -M -t10 " + reference_genome + " " + clean_R1 + " " + clean_R2 + " | samtools view -hbS - | samtools sort -o " + bam_path + bam_name + " -", file = sge)
+    elif map_tool == "B2" or map_tool == "Bowtie2":
+        print ("bowtie2 -t --no-mixed --threads 10 -x " + reference_genome + " -1 " + clean_R1 + " -2 " + clean_R2 + " -S " + sam_path + "/" + sam_name, file = sge)
+    else:
+        sys.exit("No mapping tool selected, bye-bye")
     print ("#", file = sge)
-    print ("this program works in the next directory:" + directory, file = sge)
-    print ("the reference is located in:" + wd_ref, file = sge)
-    print ("The reference name is:" + reference_genome, file = sge)
-    # print ("picard ValidateSamFile I=" + bam_path + "/" + bam_name + " MODE=SUMMARY O=" + bam_stats_path + "/" + bam_stat_name, file = sge)
-    # print ("#", file = sge)
-    # print ("picard CollectGcBiasMetrics R=" + reference_genome + " I=" + bam_path + "/" + bam_name + " O=" + stats_GC_path + "/" + GCBias_name + " CHART=" + fig_GCpdf_path + "/" + GCBias_pdf + " ASSUME_SORTED=true SUMMARY_OUTPUT=" + summ_stats_path + "/" + smmry_name + " VALIDATION_STRINGENCY=LENIENT", file = sge)
-    # print ("#", file = sge)
+    ##print ("this program works in the next directory:" + directory, file = sge) ## test line
+    ##print ("the reference is located in:" + wd_ref, file = sge) ## test line
+    ##print ("The reference name is:" + reference_genome, file = sge) ## test line
+    print ("picard ValidateSamFile I=" + bam_path + bam_name + " MODE=SUMMARY O=" + bam_stats_path + bam_stat_name, file = sge)
+    print ("#", file = sge)
+    print ("picard CollectGcBiasMetrics R=" + reference_genome + " I=" + bam_path + bam_name + " O=" + stats_GC_path + GCBias_name + " CHART=" + fig_GCpdf_path + GCBias_pdf + " ASSUME_SORTED=true SUMMARY_OUTPUT=" + summ_stats_path + "/" + smmry_name + " VALIDATION_STRINGENCY=LENIENT", file = sge)
+    print ("#", file = sge)
     # print ("picard MeanQualityByCycle R=" + reference_genome + " I=" + bam_path + "/" + bam_name + " O=" + Qcycle_stats_path + "/" + Qcyc_name + " CHART=" + fig_Qcycle_path + "/" + Qcyc_pdf + " VALIDATION_STRINGENCY=LENIENT", file = sge)
-    # print ("#", file = sge)
+    print ("#", file = sge)
     # print ("picard QualityScoreDistribution R=" + reference_genome + " I=" + bam_path + "/" + bam_name + " O=" + Qdist_stats_path + "/" + Qdist_name + " CHART=" + fig_Qdist_path + "/" + Qdist_pdf + " VALIDATION_STRINGENCY=LENIENT", file =sge)
-    # print ("#", file = sge)
+    print ("#", file = sge)
     # print ("picard MarkDuplicates INPUT=" + bam_path + "/" + bam_name + " OUTPUT=" + bam_path + "/" + bam_mrkdup_name + " METRICS_FILE=" + dupMtrx_stats_path + "/" + dupMtrx + " VALIDATION_STRINGENCY=LENIENT", file = sge)
-    # print ("#", file = sge)
+    print ("#", file = sge)
     # print ("picard ValidateSamFile I=" + bam_path + "/" + bam_mrkdup_name + " MODE=SUMMARY O=" + bam_stats_path + "/" + bam_stat1_name, file = sge)
-    # print ("#", file = sge)
+    print ("#", file = sge)
     # print ("picard AddOrReplaceReadGroups I=" + bam_path + "/" + bam_mrkdup_name + " O=" + bam_path + "/" + bam_addgp_name + " LB=" + shrt_name + " PL=illumina PU=" + shrt_name + " SM=" + shrt_name + " VALIDATION_STRINGENCY=LENIENT", file = sge)
-    # print ("#", file = sge)
+    print ("#", file = sge)
     # print ("picard ValidateSamFile I=" + bam_path + "/" + bam_addgp_name + " MODE=SUMMARY O=" + bam_stats_path + "/" + bam_stat2_name, file = sge)
-    # print ("#", file = sge)
+    print ("#", file = sge)
     # print ("samtools index " + bam_path + "/" + bam_addgp_name, file = sge)
-    # print ("#", file = sge)
+    print ("#", file = sge)
     # print ("if [[ -s " + bam_path + "/" + bam_addgp_name + " ]]; then", file = sge)
     # print ("rm -f " + bam_path + "/" + bam_mrkdup_name, file = sge)
     # print ("fi", file = sge)
-    # print ("## END_MAPPING", file = sge)
-    # print ("#", file = sge)
-    # print ("#", file = sge)
-    # print ("## INSERT SIZE", file = sge )
-    # print ("#", file = sge)
+    print ("## END_MAPPING", file = sge)
+    print ("#", file = sge)
+    print ("#", file = sge)
+    print ("## INSERT SIZE", file = sge )
+    print ("#", file = sge)
     # print ("picard CollectInsertSizeMetrics I=" + bam_path + "/" + bam_addgp_name + " O=" + stats_InsSz_path + "/" + insrt_name + " H=" + fig_InsSz_pdf_path + "/" + hist_pdf + " M=0.5", file = sge)
-    # print ("#", file = sge)
+    print ("#", file = sge)
     # print ('''R CMD BATCH --no-save --no-restore "--args FILE=''' + "'" + stats_InsSz_path + "/" + insrt_name + "'" + " FILE_OUT=" + "'" + fig_InsSz_png_path + "/" + hist_png + "' bamName='" + bam_path + "/" + bam_addgp_name + "'" + '''" ''' + R_script_path + "/insert_histogram.R " + r_log_path + "/" + r_log_name, file = sge)
-    # print ("#", file = sge)
-    # print ("## END INSERT SIZE", file = sge)
-    # print ('''duration=$(echo "$(date +%s.%N) - $start" | bc)''', file = sge)
-    # print ('''execution_time=`printf "%.2f seconds" $duration`''', file = sge)
-    # print ('''echo "Script Execution Time: $execution_time"''', file = sge)
+    print ("#", file = sge)
+    print ("## END INSERT SIZE", file = sge)
+    print ('''duration=$(echo "$(date +%s.%N) - $start" | bc)''', file = sge)
+    print ('''execution_time=`printf "%.2f seconds" $duration`''', file = sge)
+    print ('''echo "Script Execution Time: $execution_time"''', file = sge)
     sge.close()
     return sge_name  
 # Update 09/08/2021
