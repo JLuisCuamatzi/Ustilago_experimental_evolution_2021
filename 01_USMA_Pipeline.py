@@ -10,7 +10,7 @@
 ### Input:          A csv file with information and simple paths
 ### Output:         SGE to do mapping and variant calling for several samples
 ###
-# How execute this script: python3 /mnt/Cromosoma/lmorales/Public/Ustilago/B1/bin/scripts/python_scripts/01_JLCF_Mapping.py -f /mnt/Cromosoma/lmorales/Public/Ustilago/B1/information/USMA_ExpEvo_Samples.csv -r /mnt/Cromosoma/lmorales/Public/Ustilago/B1/information/ref_USMA_521_v2.csv -n jcuamatzi@dna.lavis.unam.mx -m BWA
+# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/01_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t 01_Mapping -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2.csv
 ###############################################################################################################################################
 ## Libraries
 import argparse
@@ -119,14 +119,18 @@ def pipeline(smpls_ID):
     sge_name = save_sge + "/" + fecha + "_" + smpls_ID + ".sge"
     sge = open(sge_name, "w")
     header(smpls_ID,sge)
-    #reference_genome = wd_ref + "/" + ref_name + ".fa"
+    reference_genome = wd_ref + "/" + ref_name + ".fa"
     ## Mapping requirements
     ## Paths
-    #bam_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/data/bam"
-    #fastq_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/A1/data/fastq/clean/good"
-    #bam_stats_path = bam_path + "/stats"
-    #if not os.path.exists(bam_stats_path):
-    #    os.makedirs(bam_stats_path)
+    bam_path = wd_project + "/data/bam/"
+    fastq_path = wd_project + "/data/fastq/"
+    bam_stats_path = bam_path + "/stats"
+    if not os.path.exists(bam_path):
+        os.makedirs(bam_path)
+    if not os.path.exists(fastq_path):
+        os.makedirs(fastq_path)
+    if not os.path.exists(bam_stats_path):
+        os.makedirs(bam_stats_path)
     #stats_path = "/mnt/Cromosoma/lmorales/Public/Ustilago/B1/analysis/stats"
     #mapp_stats_path = stats_path + "/mapp"
     #if not os.path.exists(mapp_stats_path):
@@ -208,6 +212,7 @@ def pipeline(smpls_ID):
     print ("#", file = sge)
     print ("this program works in the next directory:" + directory, file = sge)
     print ("the reference is located in:" + wd_ref, file = sge)
+    print ("The reference name is:" + reference_genome, file = sge)
     # print ("picard ValidateSamFile I=" + bam_path + "/" + bam_name + " MODE=SUMMARY O=" + bam_stats_path + "/" + bam_stat_name, file = sge)
     # print ("#", file = sge)
     # print ("picard CollectGcBiasMetrics R=" + reference_genome + " I=" + bam_path + "/" + bam_name + " O=" + stats_GC_path + "/" + GCBias_name + " CHART=" + fig_GCpdf_path + "/" + GCBias_pdf + " ASSUME_SORTED=true SUMMARY_OUTPUT=" + summ_stats_path + "/" + smmry_name + " VALIDATION_STRINGENCY=LENIENT", file = sge)
@@ -263,7 +268,7 @@ for i in range(0, len(smpls_ID)):
     ID = smpls_ID[i]    
     #read_1 = extcol(matrix_csv, "Read1")[i]
     #read_2 = extcol(matrix_csv, "Read2")[i]
-    #ref_name = extcol(reference_csv, "RefName")[0]
+    ref_name = extcol(reference_csv, "RefName")[0]
     sge = pipeline(ID)
     #print(tiempo, file = pyoutput)
     #subprocess.run(["qsub",sge], stdout=pyoutput, stderr=subprocess.STDOUT, shell=False, cwd=None, timeout=None, check=True, encoding=None, errors=None, text=None, env=None, universal_newlines=None)
