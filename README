@@ -23,3 +23,5 @@ $ git status -s
 $ git tag # para crear tags
 
 $ git push -u origin master
+
+# https://stackoverflow.com/questions/35942754/how-to-save-username-and-password-in-git 
