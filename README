@@ -21,3 +21,5 @@ $ git add 01_USMA_Pipeline.py
 $ git status -s
 
 $ git tag # para crear tags
+
+$ git push -u origin master
