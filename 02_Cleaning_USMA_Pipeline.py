@@ -41,7 +41,7 @@ email = str(args["email"])
 directory = str(args["directory"])
 task = str(args["task"])
 thread = str(args["thread"])
-memory = str(args["memory"])
+memory = str(args["memory"]) #RAM Memory
 ##### Functions #####
 # Function to open a csv file
 # With this function, we are only open the file
