@@ -96,7 +96,7 @@ def header(smpls_ID,sge):
 #$ -S /bin/bash
 ## Job's name
 #$ -N''', task + "_" + ID,'''
-#$ -l vf'''+ memory +'''G
+#$ -l vf='''+ memory +'''G
 #$ -pe openmp 10
 #$ -m e
 source /etc/bashrc
