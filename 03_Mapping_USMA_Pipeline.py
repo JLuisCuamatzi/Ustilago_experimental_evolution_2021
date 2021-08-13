@@ -10,7 +10,7 @@
 ### Input:          A csv file with information and simple paths
 ### Output:         SGE to do mapping and variant calling for several samples
 ###
-# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/03_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t 01_Mapping -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2.csv
+# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/03_Mapping_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t 03_Mapping -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2.csv
 ###############################################################################################################################################
 ## Libraries
 import argparse
@@ -104,12 +104,7 @@ source /etc/bashrc
 #$ -M ''' + email + '''
 ##
 ## Modules''', file = sge)
-    if map_tool == "BWA" or map_tool == "bwa":
-        print ("module load bwa/0.7.4 htslib/1.2.1 gcc/5.1.0 samtools/1.9 picard/2.6.0 r/3.6.1", file = sge)
-    elif map_tool == "B2" or map_tool == "Bowtie2":
-        print ("module load htslib/1.2.1 gcc/5.1.0 samtools/1.9 python37/3.7.0 fastqc/0.11.3 picard/2.6.0 bamtools/2.5.1 bowtie2/2.2.9", file = sge)
-    else:
-        sys.exit("No mapping tool selected, Ciao-Ciao")
+    print ("module load bwa/0.7.4 htslib/1.2.1 gcc/5.1.0 samtools/1.9 picard/2.6.0 r/3.6.1", file = sge)
     print ("##", file = sge)
     print ("##", file = sge)
 
@@ -117,19 +112,17 @@ def mapping (smpls_ID):
     save_sge = wd_project + "bin/SGE/" + task + "/"
     if not os.path.exists(save_sge):    
         os.makedirs(save_sge)
-    sge_name = save_sge + "/" + fecha + "_" + smpls_ID + ".sge"
+    sge_name = save_sge + "/" + fecha + "_" + smpls_ID + "_" + sample_name + ".sge"
     sge = open(sge_name, "w")
     header(smpls_ID,sge)
     reference_genome = wd_ref + "/" + ref_name + ".fa"
     ## Mapping requirements
     ## Paths
+    fastq_clean_path = wd_project + "data/fastq/clean/"
     bam_path = wd_project + "data/bam/"
-    fastq_path = wd_project + "data/fastq/"
     bam_stats_path = bam_path + "stats/"
     if not os.path.exists(bam_path):
         os.makedirs(bam_path)
-    if not os.path.exists(fastq_path):
-        os.makedirs(fastq_path)
     if not os.path.exists(bam_stats_path):
         os.makedirs(bam_stats_path)
     stats_path = wd_project + "analysis/stats/"
@@ -164,32 +157,33 @@ def mapping (smpls_ID):
     if not os.path.exists(fig_Qdist_path):
         os.makedirs(fig_Qdist_path)
     # Names
-    #name_1 = smpls_ID + "_" + read_1 + ".good.fq"
-    name_1 = smpls_ID + "_R1.good.fq"
-    #name_2 = smpls_ID + "_" + read_2 + ".good.fq"
-    name_2 = smpls_ID + "_R2.good.fq"
-    clean_R1 = fastq_path + name_1
-    clean_R2 = fastq_path + name_2
-    bam_name = smpls_ID + "_" + map_tool + ".bam"
-    bam_stat_name = smpls_ID + "_" + map_tool + "_bam_0_status.txt"
-    bam_stat1_name = smpls_ID + "_" + map_tool + "_bam_1_status.txt"
-    bam_stat2_name = smpls_ID + "_" + map_tool + "_bam_2_status.txt"
-    bam_mrkdup_name = smpls_ID + "_" + map_tool + ".mrkdup.bam"
-    bam_addgp_name = smpls_ID + "_" + map_tool + ".mrkdup.addgp.bam"
-    GCBias_name = smpls_ID + "_" + map_tool + "_GCBias.txt"
-    GCBias_pdf = smpls_ID + "_" + map_tool + "_GCBias.pdf"
-    smmry_name = smpls_ID + "_" + map_tool + "_summary_metrics.txt"
-    Qcyc_name = smpls_ID + "_" + map_tool + "_Qcycle.txt"
-    Qcyc_pdf = smpls_ID + "_" + map_tool + "_Qcycle.pdf"
-    Qdist_name = smpls_ID + "_" + map_tool + "_Qdist.txt"
-    Qdist_pdf = smpls_ID + "_" + map_tool + "_Qdist.pdf"
-    dupMtrx = smpls_ID + "_" + map_tool + "_duplicateMatrix"
+    fastq_name_clean_R1 = smpls_ID + "_" + sample_name + "_R1_clean.fastq.gz"
+    fastq_name_clean_R2 = smpls_ID + "_" + sample_name + "_R2_clean.fastq.gz"
+    bam_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".bam"
+    bam_stat_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_bam_0_status.txt"
+    bam_stat1_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_bam_1_status.txt"
+    bam_stat2_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_bam_2_status.txt"
+    bam_mrkdup_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".mrkdup.bam"
+    bam_addgp_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".mrkdup.addgp.bam"
+    GCBias_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_GCBias.txt"
+    GCBias_pdf = smpls_ID + "_" + sample_name + "_" + map_tool + "_GCBias.pdf"
+    smmry_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_summary_metrics.txt"
+    Qcyc_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_Qcycle.txt"
+    Qcyc_pdf = smpls_ID + "_" + sample_name + "_" + map_tool + "_Qcycle.pdf"
+    Qdist_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_Qdist.txt"
+    Qdist_pdf = smpls_ID + "_" + sample_name + "_" + map_tool + "_Qdist.pdf"
+    dupMtrx = smpls_ID + "_" + sample_name + "_" + map_tool + "_duplicateMatrix"
+    #
+    #Files
+    clean_R1 = fastq_clean_path + fastq_name_clean_R1
+    clean_R2 = fastq_clean_path + fastq_name_clean_R2
+    #
     ## Insert size requeriments
-    # paths
-    fig_InsSz_pdf_path = wd_project + "InsertSize_pdf/"
+    # Insert size requeriments: paths
+    fig_InsSz_pdf_path = fig_path + "InsertSize_pdf/"
     if not os.path.exists(fig_InsSz_pdf_path):
         os.makedirs(fig_InsSz_pdf_path)
-    fig_InsSz_png_path = wd_project + "InsertSize_png/"
+    fig_InsSz_png_path = fig_path + "InsertSize_png/"
     if not os.path.exists(fig_InsSz_png_path):
         os.makedirs(fig_InsSz_png_path)
     stats_InsSz_path = stats_path + "mapp/InsertSize_metrics/"
@@ -199,23 +193,16 @@ def mapping (smpls_ID):
     if not os.path.exists(r_log_path):
         os.makedirs(r_log_path)
     R_script_path = "/mnt/Timina/lmorales/Public/ymez/bin/scripts/03_mapping"
-    # names
+    # Insert size requeriments: names
     insrt_name = smpls_ID + "_insert_metrics.txt"
     hist_pdf = smpls_ID + "_insert_histogram.pdf"
     r_log_name = smpls_ID + "_histogram.Rout"
     hist_png = smpls_ID + "_insert_histogram.png"
+    #
     print ('''start=$(date +%s.%N)''', file = sge)
     print ("## MAPPING ", file = sge )
-    if map_tool == "BWA" or map_tool == "bwa":
-        print ("bwa mem -M -t10 " + reference_genome + " " + clean_R1 + " " + clean_R2 + " | samtools view -hbS - | samtools sort -o " + bam_path + bam_name + " -", file = sge)
-    elif map_tool == "B2" or map_tool == "Bowtie2":
-        print ("bowtie2 -t --no-mixed --threads 10 -x " + reference_genome + " -1 " + clean_R1 + " -2 " + clean_R2 + " -S " + sam_path + "/" + sam_name, file = sge)
-    else:
-        sys.exit("No mapping tool selected, bye-bye")
+    print ("bwa mem -M -t10 " + reference_genome + " " + clean_R1 + " " + clean_R2 + " | samtools view -hbS - | samtools sort -o " + bam_path + bam_name + " -", file = sge)
     print ("#", file = sge)
-    ##print ("this program works in the next directory:" + directory, file = sge) ## test line
-    ##print ("the reference is located in:" + wd_ref, file = sge) ## test line
-    ##print ("The reference name is:" + reference_genome, file = sge) ## test line
     print ("picard ValidateSamFile I=" + bam_path + bam_name + " MODE=SUMMARY O=" + bam_stats_path + bam_stat_name, file = sge)
     print ("#", file = sge)
     print ("picard CollectGcBiasMetrics R=" + reference_genome + " I=" + bam_path + bam_name + " O=" + stats_GC_path + GCBias_name + " CHART=" + fig_GCpdf_path + GCBias_pdf + " ASSUME_SORTED=true SUMMARY_OUTPUT=" + summ_stats_path + "/" + smmry_name + " VALIDATION_STRINGENCY=LENIENT", file = sge)
@@ -268,9 +255,8 @@ if not os.path.exists(wd_project + "/log/Py_scripts/" + task + "/"):
 pyout_name = os.path.normpath(pyout_name)
 pyoutput = open(pyout_name, "a+")
 for i in range(0, len(smpls_ID)):
-    ID = smpls_ID[i]    
-    #read_1 = extcol(matrix_csv, "Read1")[i]
-    #read_2 = extcol(matrix_csv, "Read2")[i]
+    ID = smpls_ID[i]
+    sample_name = extcol(matrix_csv, "Name")[i]
     ref_name = extcol(reference_csv, "RefName")[0]
     sge = mapping(ID)
     #print(tiempo, file = pyoutput)
