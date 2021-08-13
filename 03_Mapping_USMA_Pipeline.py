@@ -10,7 +10,7 @@
 ### Input:          A csv file with information and simple paths
 ### Output:         SGE to do mapping and variant calling for several samples
 ###
-# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/03_Mapping_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t 03_Mapping -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2.csv
+# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/03_Mapping_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t 03_Mapping -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2.csv -M 8
 ###############################################################################################################################################
 ## Libraries
 import argparse
@@ -96,7 +96,7 @@ def header(smpls_ID,sge):
 #$ -S /bin/bash
 ## Job's name
 #$ -N''', task + "_" + ID,'''
-#$ -l vf=8G
+#$ -l vf'''+ memory +'''G
 #$ -pe openmp 10
 #$ -m e
 source /etc/bashrc
