@@ -121,6 +121,7 @@ def variantcall (smpls_ID):
     gff_path = "/mnt/Timina/lmorales/Public/Ustilago/reference/annotation"
     ## Mapping requirements
     ## Paths
+    bam_path = wd_project + "data/bam/"
     vcf_path = wd_project + "data/VCF/"
     if not os.path.exists(vcf_path):
         os.makedirs(vcf_path)
@@ -189,13 +190,9 @@ def variantcall (smpls_ID):
         os.makedirs(annttd_INDEL_PASS_table_path)
     
     
-    fastq_clean_path = wd_project + "data/fastq/clean/"
-    bam_path = wd_project + "data/bam/"
-    bam_stats_path = bam_path + "stats/"
-    if not os.path.exists(bam_path):
-        os.makedirs(bam_path)
-    if not os.path.exists(bam_stats_path):
-        os.makedirs(bam_stats_path)
+    
+    
+    
     stats_path = wd_project + "analysis/stats/"
     mapp_stats_path = stats_path + "mapp/"
     if not os.path.exists(mapp_stats_path):
@@ -228,65 +225,45 @@ def variantcall (smpls_ID):
     if not os.path.exists(fig_Qdist_path):
         os.makedirs(fig_Qdist_path)
     # Names
-    fastq_name_clean_R1 = smpls_ID + "_" + sample_name + "_R1_clean.fastq.gz"
-    fastq_name_clean_R2 = smpls_ID + "_" + sample_name + "_R2_clean.fastq.gz"
-    bam_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".bam"
-    bam_stat_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_bam_0_status.txt"
-    bam_stat1_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_bam_1_status.txt"
-    bam_stat2_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_bam_2_status.txt"
-    bam_mrkdup_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".mrkdup.bam"
-    bam_addgp_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".mrkdup.addgp.bam"
-    GCBias_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_GCBias.txt"
-    GCBias_pdf = smpls_ID + "_" + sample_name + "_" + map_tool + "_GCBias.pdf"
-    smmry_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_summary_metrics.txt"
-    Qcyc_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_Qcycle.txt"
-    Qcyc_pdf = smpls_ID + "_" + sample_name + "_" + map_tool + "_Qcycle.pdf"
-    Qdist_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_Qdist.txt"
-    Qdist_pdf = smpls_ID + "_" + sample_name + "_" + map_tool + "_Qdist.pdf"
-    dupMtrx = smpls_ID + "_" + sample_name + "_" + map_tool + "_duplicateMatrix"
-    #
-    #Files
-    clean_R1 = fastq_clean_path + fastq_name_clean_R1
-    clean_R2 = fastq_clean_path + fastq_name_clean_R2
-    #
-    ## Insert size requeriments
-    # Insert size requeriments: paths
-    fig_InsSz_pdf_path = fig_path + "InsertSize_pdf/"
-    if not os.path.exists(fig_InsSz_pdf_path):
-        os.makedirs(fig_InsSz_pdf_path)
-    fig_InsSz_png_path = fig_path + "InsertSize_png/"
-    if not os.path.exists(fig_InsSz_png_path):
-        os.makedirs(fig_InsSz_png_path)
-    stats_InsSz_path = stats_path + "mapp/InsertSize_metrics/"
-    if not os.path.exists(stats_InsSz_path):
-        os.makedirs(stats_InsSz_path)
-    r_log_path = wd_project + "log/R/insert_size/"
-    if not os.path.exists(r_log_path):
-        os.makedirs(r_log_path)
-    R_script_path = "/mnt/Timina/lmorales/Public/ymez/bin/scripts/03_mapping"
-    # Insert size requeriments: names
-    insrt_name = smpls_ID + "_insert_metrics.txt"
-    hist_pdf = smpls_ID + "_insert_histogram.pdf"
-    r_log_name = smpls_ID + "_histogram.Rout"
-    hist_png = smpls_ID + "_insert_histogram.png"
-    ## Coverage requirements
-    # Coverage requirements: paths
-    cov_path = wd_project + "analysis/coverage/"
-    if not os.path.exists(cov_path):
-        os.makedirs(cov_path)
-    # Coverage requirements: names
-    cov_name = smpls_ID + "_" + sample_name + ".coverage_per.bp"
-    cov_name_bed5 = smpls_ID + "_" + sample_name + ".coverage.bed5"
-    cov_name_wind = smpls_ID + "_" + sample_name + ".coverage_" + window + "bp_windows.bed"
+    
+    
+    bam_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".mrkdup.addgp.bam"
+    g_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".g.vcf"
+    gt_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".gt.g.vcf"
+    SNP_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".gt.SNP.g.vcf"
+    SNP_flt_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_SNP_flt.vcf"
+    SNP_flt_vcf_PASS_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_SNP_flt_PASS.vcf"
+    INDEL_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".gt.INDEL.g.vcf"
+    INDEL_flt_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_INDEL_flt.vcf"
+    INDEL_flt_vcf_PASS_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_INDEL_flt_PASS.vcf"
+    SNP_flt_vcf_gz_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_SNP_flt.vcf.gz"
+    INDEL_flt_vcf_gz_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_INDEL_flt.vcf.gz"
+    SNP_flt_vcf_gz_PASS_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_SNP_flt_PASS.vcf.gz"
+    INDEL_flt_vcf_gz_PASS_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_INDEL_flt_PASS.vcf.gz"
+    SNP_flt_vcf_PASS_BG_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_SNP_PASS_BG.vcf"
+    INDEL_flt_vcf_PASS_BG_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_INDEL_PASS_BG.vcf"
+    annttd_SNP_name = smpls_ID + "_" + sample_name + "_SNP_raw_annotated.vcf.gz"
+    annttd_INDEL_name = smpls_ID + "_" + sample_name + "_INDEL_raw_annotated.vcf.gz"
+    annttd_SNP_flt_name = smpls_ID + "_" + sample_name + "_SNP_flt_annotated.vcf.gz"
+    annttd_INDEL_flt_name = smpls_ID + "_" + sample_name + "_INDEL_flt_annotated.vcf.gz"
+    annttd_SNP_PASS_name = smpls_ID + "_" + sample_name + "_SNP_PASS_annotated.vcf.gz"
+    annttd_INDEL_PASS_name = smpls_ID + "_" + sample_name + "_INDEL_PASS_annotated.vcf.gz"
+    annttd_SNP_PASS_BG_name = smpls_ID + "_" + sample_name + "_SNP_PASS_BG_annotated.vcf.gz"
+    annttd_INDEL_PASS_BG_name = smpls_ID + "_" + sample_name + "_INDEL_PASS_BG_annotated.vcf.gz"
+    
+    
     #
     print ('''start=$(date +%s.%N)''', file = sge)
-    print ("## MAPPING ", file = sge )
-    print ("bwa mem -M -t10 " + reference_genome + " " + clean_R1 + " " + clean_R2 + " | samtools view -hbS - | samtools sort -o " + bam_path + bam_name + " -", file = sge)
+    print ("## VARIANT CALLING", file = sge )
     print ("#", file = sge)
-    print ("picard ValidateSamFile I=" + bam_path + bam_name + " MODE=SUMMARY O=" + bam_stats_path + bam_stat_name, file = sge)
+    print ('''gatk --java-options "-Xmx16g" HaplotypeCaller -R ''' + reference_genome + " -I " + bam_path + bam_addgp_name + " -O " + g_vcf_path + g_vcf_name + " --sample-ploidy 1 --annotation DepthPerSampleHC --annotation StrandBiasBySample --annotation AlleleFraction --annotation AS_FisherStrand --annotation ChromosomeCounts --emit-ref-confidence GVCF", file = sge)
     print ("#", file = sge)
-    print ("picard CollectGcBiasMetrics R=" + reference_genome + " I=" + bam_path + bam_name + " O=" + stats_GC_path + GCBias_name + " CHART=" + fig_GCpdf_path + GCBias_pdf + " ASSUME_SORTED=true SUMMARY_OUTPUT=" + summ_stats_path + "/" + smmry_name + " VALIDATION_STRINGENCY=LENIENT", file = sge)
+    print ('''gatk --java-options "-Xmx16g" GenotypeGVCFs -R ''' + reference_genome + " -V " + g_vcf_path + g_vcf_name + " -O " + gt_vcf_path + gt_vcf_name + " --sample-ploidy 1 --annotation DepthPerSampleHC --annotation StrandBiasBySample --annotation AlleleFraction --annotation AS_FisherStrand --annotation ChromosomeCounts", file = sge)
     print ("#", file = sge)
+    print ('''gatk --java-options "-Xmx16g" SelectVariants -R ''' + reference_genome + " -V " + gt_vcf_path + gt_vcf_name + " --select-type-to-include SNP -O " + SNP_vcf_path + SNP_vcf_name, file = sge)
+    print ("#", file = sge)
+    ##
+    ## 2021-08-16
     print ("picard MeanQualityByCycle R=" + reference_genome + " I=" + bam_path + bam_name + " O=" + Qcycle_stats_path + Qcyc_name + " CHART=" + fig_Qcycle_path + Qcyc_pdf + " VALIDATION_STRINGENCY=LENIENT", file = sge)
     print ("#", file = sge)
     print ("picard QualityScoreDistribution R=" + reference_genome + " I=" + bam_path + bam_name + " O=" + Qdist_stats_path + Qdist_name + " CHART=" + fig_Qdist_path + Qdist_pdf + " VALIDATION_STRINGENCY=LENIENT", file =sge)
