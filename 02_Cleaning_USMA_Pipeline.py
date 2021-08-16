@@ -138,7 +138,7 @@ def cleaning(smpls_ID):
     json_name = smpls_ID + "_fastp.json"
     html_name = smpls_ID + "_fastp.html"
     #
-    print ("## MAPPING ", file = sge)
+    print ("## CLEANING ", file = sge)
     print ('''start=$(date +%s.%N)''', file = sge)
     print ('''echo "Start to clean fastq files"''', file = sge)
     print ("#", file = sge)
