@@ -10,7 +10,7 @@
 ### Input:          A csv file with information and simple paths
 ### Output:         SGE to do mapping and variant calling for several samples
 ###
-# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/03_Mapping_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t 03_Mapping -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2.csv -M 8
+# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/03_Mapping_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t 03_Mapping -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2.csv -M 8 -w 200
 ###############################################################################################################################################
 ## Libraries
 import argparse
@@ -33,6 +33,7 @@ ag.add_argument("-m", "--mapping", default = "BWA", help = "mapping tool. BWA or
 ag.add_argument("-d", "--directory", default = "/home/jcuamatzi", help = "path to the project directory")
 ag.add_argument("-t", "--task", default = "", help = "Task")
 ag.add_argument("-M", "--memory", default = "2", help = "RAM memory")
+ag.add_argument("-w", "--window",  default = "100", help = "size of the windows in bp")
 ##
 #
 args = vars(ag.parse_args())
@@ -43,6 +44,7 @@ map_tool = str(args["mapping"])
 directory = str(args["directory"])
 task = str(args["task"])
 memory = str(args["memory"])
+window = str(args["window"])
 ##### Functions #####
 # Function to open a csv file
 # With this function, we are only open the file
@@ -198,6 +200,15 @@ def mapping (smpls_ID):
     hist_pdf = smpls_ID + "_insert_histogram.pdf"
     r_log_name = smpls_ID + "_histogram.Rout"
     hist_png = smpls_ID + "_insert_histogram.png"
+    ## Coverage requirements
+    # Coverage requirements: paths
+    cov_path = wd_project + "analysis/Coverage/"
+    if not os.path.exists(cov_path):
+        os.makedirs(cov_path)
+    # Coverage requirements: names
+    cov_name = smpls_ID + "_" + sample_name + ".coverage_per.bp"
+    cov_name_bed5 = smpls_ID + "_" + sample_name + ".coverage.bed5"
+    cov_name_wind = smpls_ID + "_" + sample_name + + ".coverage_" + window + "bp_windows.bed"
     #
     print ('''start=$(date +%s.%N)''', file = sge)
     print ("## MAPPING ", file = sge )
@@ -227,6 +238,7 @@ def mapping (smpls_ID):
     print ("## END_MAPPING", file = sge)
     print ("#", file = sge)
     print ("#", file = sge)
+    ## Insert size
     print ("## INSERT SIZE", file = sge )
     print ("#", file = sge)
     print ("picard CollectInsertSizeMetrics I=" + bam_path + bam_addgp_name + " O=" + stats_InsSz_path + insrt_name + " H=" + fig_InsSz_pdf_path + hist_pdf + " M=0.5", file = sge)
@@ -234,12 +246,19 @@ def mapping (smpls_ID):
     print ('''R CMD BATCH --no-save --no-restore "--args FILE=''' + "'" + stats_InsSz_path + insrt_name + "'" + " FILE_OUT=" + "'" + fig_InsSz_png_path + hist_png + "' bamName='" + bam_path + bam_addgp_name + "'" + '''" ''' + R_script_path + "/insert_histogram.R " + r_log_path + r_log_name, file = sge)
     print ("#", file = sge)
     print ("## END INSERT SIZE", file = sge)
+    ## Coverage
+    print ("## COVERAGE", file = sge)
+    print ("## Obtain genome coverage in " + window + " bp non-overlapping windows", file = sge)
+    print ("bedtools genomecov -ibam " + bam_path + bam_addgp_name + " -d > " + cov_path + cov_name, file = sge)
+    print ('''awk -vFS="\\t" -vOFS="\\t" '{ print $1, $2, ($2 +1), ".", $3 }' ''' + cov_path + cov_name + " | sort-bed - > " + cov_path + cov_name_bed5, file = sge)
+    print ("bedops --merge " + cov_path + cov_name_bed5 + " | bedops --chop " + window + " - | bedmap --echo --mean --delim '\\t' - " + cov_path + cov_name_bed5 + " > " + cov_path + cov_name_wind, file = sge)
+    print ("## END COVERAGE", file = sge)
     print ('''duration=$(echo "$(date +%s.%N) - $start" | bc)''', file = sge)
     print ('''execution_time=`printf "%.2f seconds" $duration`''', file = sge)
     print ('''echo "Script Execution Time: $execution_time"''', file = sge)
     sge.close()
     return sge_name  
-# Update 10/08/2021
+# Update 16/08/2021
 
 ##### MAIN #####
 ## OPEN FILE ##
