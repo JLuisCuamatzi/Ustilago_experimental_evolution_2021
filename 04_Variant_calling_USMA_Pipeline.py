@@ -1,16 +1,15 @@
 ###
 ###
 ###############################################################################################################################################
-### File:           03_Mapping_USMA_Pipeline.py
+### File:           04_Variant_calling_USMA_Pipeline.py
 ### Written by:     Jorge Luis Cuamatzi Flores
-### Date:           2020_May_29
-### Update:         2021_August_13
+### Date:           2021_August_16
 ###
 ### Project:        This script writes a sge file to map and do the variant calling
 ### Input:          A csv file with information and simple paths
 ### Output:         SGE to do mapping and variant calling for several samples
 ###
-# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/03_Mapping_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t 03_Mapping -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2.csv -M 8 -w 200
+# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/04_Variant_calling_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t 04_Variant_calling -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2.csv -M 16 -w 200
 ###############################################################################################################################################
 ## Libraries
 import argparse
@@ -106,20 +105,90 @@ source /etc/bashrc
 #$ -M ''' + email + '''
 ##
 ## Modules''', file = sge)
-    print ("module load bwa/0.7.4 htslib/1.2.1 gcc/5.1.0 samtools/1.9 picard/2.6.0 r/3.6.1", file = sge)
+    print ("module load gcc/5.1.0 bedops/2.4.20 bedtools/2.24 gatk/4.1.1.0 picard/2.6.0 samtools/1.9 bcftools/1.9 vcftools/0.1.14" , file = sge)
     print ("##", file = sge)
     print ("##", file = sge)
 
-def mapping (smpls_ID):
+def variantcall (smpls_ID):
     save_sge = wd_project + "bin/SGE/" + task + "/"
     if not os.path.exists(save_sge):    
         os.makedirs(save_sge)
     sge_name = save_sge + "/" + fecha + "_" + smpls_ID + "_" + sample_name + ".sge"
     sge = open(sge_name, "w")
     header(smpls_ID,sge)
+    # Reference
     reference_genome = wd_ref + "/" + ref_name + ".fa"
+    gff_path = "/mnt/Timina/lmorales/Public/Ustilago/reference/annotation"
     ## Mapping requirements
     ## Paths
+    vcf_path = wd_project + "data/VCF/"
+    if not os.path.exists(vcf_path):
+        os.makedirs(vcf_path)
+    g_vcf_path = vcf_path + "g_vcf/"
+    if not os.path.exists(g_vcf_path):
+        os.makedirs(g_vcf_path)
+    gt_vcf_path = vcf_path + "gt_vcf/"
+    if not os.path.exists(gt_vcf_path):
+        os.makedirs(gt_vcf_path)
+    SNP_vcf_path = gt_vcf_path + "SNP/"
+    if not os.path.exists(SNP_vcf_path):
+        os.makedirs(SNP_vcf_path)
+    SNP_flt_vcf_path = SNP_vcf_path + "filter_vcf/"
+    if not os.path.exists(SNP_flt_vcf_path):
+        os.makedirs(SNP_flt_vcf_path)
+    SNP_flt_vcf_PASS_path = SNP_flt_vcf_path + "PASS/"
+    if not os.path.exists(SNP_flt_vcf_PASS_path):
+        os.makedirs(SNP_flt_vcf_PASS_path)
+    INDEL_vcf_path = gt_vcf_path + "INDEL/"
+    if not os.path.exists(INDEL_vcf_path):
+        os.makedirs(INDEL_vcf_path)    
+    INDEL_flt_vcf_path = INDEL_vcf_path + "filter_vcf/"
+    if not os.path.exists(INDEL_flt_vcf_path):
+        os.makedirs(INDEL_flt_vcf_path)
+    INDEL_flt_vcf_PASS_path = INDEL_flt_vcf_path + "PASS/"
+    if not os.path.exists(INDEL_flt_vcf_PASS_path):
+        os.makedirs(INDEL_flt_vcf_PASS_path)
+    annotation_vcf_path = vcf_path + "Annotation/"
+    if not os.path.exists(annotation_vcf_path):
+        os.makedirs(annotation_vcf_path)
+    annttd_SNP_path = annotation_vcf_path + "SNP/"
+    if not os.path.exists(annttd_SNP_path):
+        os.makedirs(annttd_SNP_path)
+    annttd_BG_SNP_path = annotation_vcf_path + "Background/SNP/"
+    if not os.path.exists(annttd_BG_SNP_path):
+        os.makedirs(annttd_BG_SNP_path)
+    annttd_BG_INDEL_path = annotation_vcf_path + "Background/INDEL/"
+    if not os.path.exists(annttd_BG_INDEL_path):
+        os.makedirs(annttd_BG_INDEL_path)    
+    annttd_SNP_raw_table_path = annttd_SNP_path + "Tables/SNP_raw/"
+    if not os.path.exists(annttd_SNP_raw_table_path):
+        os.makedirs(annttd_SNP_raw_table_path)
+    annttd_SNP_flt_table_path = annttd_SNP_path + "Tables/SNP_filter/"
+    if not os.path.exists(annttd_SNP_flt_table_path):
+        os.makedirs(annttd_SNP_flt_table_path)
+    annttd_SNP_PASS_table_path = annttd_SNP_path + "Tables/SNP_PASS/"
+    if not os.path.exists(annttd_SNP_PASS_table_path):
+        os.makedirs(annttd_SNP_PASS_table_path)
+    annttd_SNP_BG_table_path = annttd_SNP_path + "Tables/SNP_Background/"
+    if not os.path.exists(annttd_SNP_BG_table_path):
+        os.makedirs(annttd_SNP_BG_table_path)
+    annttd_INDEL_path = annotation_vcf_path + "INDEL/"
+    if not os.path.exists(annttd_INDEL_path):
+        os.makedirs(annttd_INDEL_path)
+    annttd_INDELS_BG_table_path = annttd_INDEL_path + "Tables/INDEL_Background/"
+    if not os.path.exists(annttd_INDELS_BG_table_path):
+        os.makedirs(annttd_INDELS_BG_table_path)
+    annttd_INDEL_raw_table_path = annttd_INDEL_path + "Tables/INDEL_raw/"
+    if not os.path.exists(annttd_INDEL_raw_table_path):
+        os.makedirs(annttd_INDEL_raw_table_path)
+    annttd_INDEL_flt_table_path = annttd_INDEL_path + "Tables/INDEL_filter/"
+    if not os.path.exists(annttd_INDEL_flt_table_path):
+        os.makedirs(annttd_INDEL_flt_table_path)
+    annttd_INDEL_PASS_table_path = annttd_INDEL_path + "Tables/INDEL_PASS/"
+    if not os.path.exists(annttd_INDEL_PASS_table_path):
+        os.makedirs(annttd_INDEL_PASS_table_path)
+    
+    
     fastq_clean_path = wd_project + "data/fastq/clean/"
     bam_path = wd_project + "data/bam/"
     bam_stats_path = bam_path + "stats/"
@@ -279,7 +348,7 @@ for i in range(0, len(smpls_ID)):
     ID = smpls_ID[i]
     sample_name = extcol(matrix_csv, "Name")[i]
     ref_name = extcol(reference_csv, "RefName")[0]
-    sge = mapping(ID)
+    sge = variantcall(ID)
     #print(tiempo, file = pyoutput)
     #subprocess.run(["qsub",sge], stdout=pyoutput, stderr=subprocess.STDOUT, shell=False, cwd=None, timeout=None, check=True, encoding=None, errors=None, text=None, env=None, universal_newlines=None)
     #print(tiempo, file = pyoutput)
