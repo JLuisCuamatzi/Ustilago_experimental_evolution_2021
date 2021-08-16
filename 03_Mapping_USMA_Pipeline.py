@@ -1,7 +1,7 @@
 ###
 ###
 ###############################################################################################################################################
-### File:           03_USMA_Pipeline.py
+### File:           03_Mapping_USMA_Pipeline.py
 ### Written by:     Jorge Luis Cuamatzi Flores
 ### Date:           2020_May_29
 ### Update:         2021_August_13
@@ -208,7 +208,7 @@ def mapping (smpls_ID):
     # Coverage requirements: names
     cov_name = smpls_ID + "_" + sample_name + ".coverage_per.bp"
     cov_name_bed5 = smpls_ID + "_" + sample_name + ".coverage.bed5"
-    cov_name_wind = smpls_ID + "_" + sample_name + + ".coverage_" + window + "bp_windows.bed"
+    cov_name_wind = smpls_ID + "_" + sample_name + ".coverage_" + window + "bp_windows.bed"
     #
     print ('''start=$(date +%s.%N)''', file = sge)
     print ("## MAPPING ", file = sge )
@@ -246,6 +246,8 @@ def mapping (smpls_ID):
     print ('''R CMD BATCH --no-save --no-restore "--args FILE=''' + "'" + stats_InsSz_path + insrt_name + "'" + " FILE_OUT=" + "'" + fig_InsSz_png_path + hist_png + "' bamName='" + bam_path + bam_addgp_name + "'" + '''" ''' + R_script_path + "/insert_histogram.R " + r_log_path + r_log_name, file = sge)
     print ("#", file = sge)
     print ("## END INSERT SIZE", file = sge)
+    print ("#", file = sge)
+    print ("#", file = sge)
     ## Coverage
     print ("## COVERAGE", file = sge)
     print ("## Obtain genome coverage in " + window + " bp non-overlapping windows", file = sge)
