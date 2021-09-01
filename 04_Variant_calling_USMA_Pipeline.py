@@ -228,7 +228,8 @@ def variantcall (smpls_ID):
     
     
     bam_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".mrkdup.addgp.bam"
-    g_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".g.vcf"
+    bam_name_2 = smpls_ID + "_" + sample_name + "_bamout_VC.bam"
+    g_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".g.vcf.gz" # compress
     gt_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".gt.g.vcf"
     SNP_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".gt.SNP.g.vcf"
     SNP_flt_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_SNP_flt.vcf"
@@ -251,12 +252,15 @@ def variantcall (smpls_ID):
     annttd_SNP_PASS_BG_name = smpls_ID + "_" + sample_name + "_SNP_PASS_BG_annotated.vcf.gz"
     annttd_INDEL_PASS_BG_name = smpls_ID + "_" + sample_name + "_INDEL_PASS_BG_annotated.vcf.gz"
     
+    bamout = bam_path + "bamout_VC/"
+    if not os.path.exists(bamout):
+        os.makedirs(bamout)
     
     #
     print ('''start=$(date +%s.%N)''', file = sge)
     print ("## VARIANT CALLING", file = sge )
     print ("#", file = sge)
-    print ('''gatk --java-options "-Xmx16g" HaplotypeCaller -R ''' + reference_genome + " -I " + bam_path + bam_addgp_name + " -O " + g_vcf_path + g_vcf_name + " --sample-ploidy 1 --annotation DepthPerSampleHC --annotation StrandBiasBySample --annotation AlleleFraction --annotation AS_FisherStrand --annotation ChromosomeCounts --emit-ref-confidence GVCF", file = sge)
+    print ('''gatk --java-options "-Xmx16g" HaplotypeCaller -R ''' + reference_genome + " -I " + bam_path + bam_addgp_name + " -O " + g_vcf_path + g_vcf_name + " -bamout " + bamout + bam_name_2 + " --sample-ploidy 1 --annotation DepthPerSampleHC --annotation StrandBiasBySample --annotation AlleleFraction --annotation AS_FisherStrand --annotation ChromosomeCounts --emit-ref-confidence GVCF", file = sge)
     print ("#", file = sge)
     print ('''gatk --java-options "-Xmx16g" GenotypeGVCFs -R ''' + reference_genome + " -V " + g_vcf_path + g_vcf_name + " -O " + gt_vcf_path + gt_vcf_name + " --sample-ploidy 1 --annotation DepthPerSampleHC --annotation StrandBiasBySample --annotation AlleleFraction --annotation AS_FisherStrand --annotation ChromosomeCounts", file = sge)
     print ("#", file = sge)
