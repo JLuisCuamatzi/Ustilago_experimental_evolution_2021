@@ -260,7 +260,7 @@ def variantcall (smpls_ID):
     print ('''start=$(date +%s.%N)''', file = sge)
     print ("## VARIANT CALLING", file = sge )
     print ("#", file = sge)
-    print ('''gatk --java-options "-Xmx16g" HaplotypeCaller -R ''' + reference_genome + " -I " + bam_path + bam_addgp_name + " -O " + g_vcf_path + g_vcf_name + " -bamout " + bamout + bam_name_2 + " --sample-ploidy 1 --annotation DepthPerSampleHC --annotation StrandBiasBySample --annotation AlleleFraction --annotation AS_FisherStrand --annotation ChromosomeCounts --emit-ref-confidence GVCF", file = sge)
+    print ('''gatk --java-options "-Xmx16g" HaplotypeCaller -R ''' + reference_genome + " -I " + bam_path + bam_addgp_name + " -O " + g_vcf_path + g_vcf_name + " -bamout " + bamout + bam_name_2 + " --sample-ploidy 1 --annotation DepthPerSampleHC --annotation StrandBiasBySample --annotation AlleleFraction --annotation AS_FisherStrand --annotation ChromosomeCounts --dont-use-soft-clipped-bases TRUE -ERC GVCF", file = sge)
     print ("#", file = sge)
     print ('''gatk --java-options "-Xmx16g" GenotypeGVCFs -R ''' + reference_genome + " -V " + g_vcf_path + g_vcf_name + " -O " + gt_vcf_path + gt_vcf_name + " --sample-ploidy 1 --annotation DepthPerSampleHC --annotation StrandBiasBySample --annotation AlleleFraction --annotation AS_FisherStrand --annotation ChromosomeCounts", file = sge)
     print ("#", file = sge)
