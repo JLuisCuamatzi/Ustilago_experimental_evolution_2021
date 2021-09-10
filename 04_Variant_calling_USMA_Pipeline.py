@@ -268,7 +268,7 @@ def variantcall (smpls_ID):
     print ("#", file = sge)
     ##
     ## 2021-08-16
-    print ("picard MeanQualityByCycle R=" + reference_genome + " I=" + bam_path + bam_name + " O=" + Qcycle_stats_path + Qcyc_name + " CHART=" + fig_Qcycle_path + Qcyc_pdf + " VALIDATION_STRINGENCY=LENIENT", file = sge)
+    print ("picard MeanQualityByCycle R=" + reference_genome + " I=" + bam_path + bam_name + " O=" + Qcycle_stats_path + Qcyc_name + " CHART=" + fig_Qcycle_path + Qcyc_pdf + " VALIDATION_STRINGENCY=LENIENT", file = sge) # No
     print ("#", file = sge)
     print ("picard QualityScoreDistribution R=" + reference_genome + " I=" + bam_path + bam_name + " O=" + Qdist_stats_path + Qdist_name + " CHART=" + fig_Qdist_path + Qdist_pdf + " VALIDATION_STRINGENCY=LENIENT", file =sge)
     print ("#", file = sge)
