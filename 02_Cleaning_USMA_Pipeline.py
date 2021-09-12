@@ -9,9 +9,10 @@
 ### Input:          A csv file with information and simple paths
 ### Output:         SGE to do mapping and variant calling for several samples
 ###
-# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/02_Cleaning_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t 02_Cleaning -w 10 -M 6
+# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/02_Cleaning_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t Cleaning -w 10 -M 6
 # -w threads for fastp
 # -M RAM memory
+# for the -t cannot start with a digit
 ###############################################################################################################################################
 ## Libraries
 import argparse
@@ -130,9 +131,9 @@ def cleaning(smpls_ID):
     if not os.path.exists(fastp_htlml_path):
         os.makedirs(fastp_htlml_path)
     # Names
-    fastq_name_raw_R1 = smpls_ID + "_" + sample_name + "_R1.fastq.gz" # for compress fastq
+    #fastq_name_raw_R1 = smpls_ID + "_" + sample_name + "_R1.fastq.gz" # for compress fastq
     fastq_name_raw_R1 = smpls_ID + "_" + sample_name + "_R1.fastq" # for uncompress fastq
-    fastq_name_raw_R2 = smpls_ID + "_" + sample_name + "_R2.fastq.gz" # for compress fastq
+    #fastq_name_raw_R2 = smpls_ID + "_" + sample_name + "_R2.fastq.gz" # for compress fastq
     fastq_name_raw_R2 = smpls_ID + "_" + sample_name + "_R2.fastq" # for uncompress fastq
     fastq_name_clean_R1 = smpls_ID + "_" + sample_name + "_R1_clean.fastq.gz"
     fastq_name_clean_R2 = smpls_ID + "_" + sample_name + "_R2_clean.fastq.gz"
@@ -169,5 +170,5 @@ for i in range(0, len(smpls_ID)):
     sample_name = extcol(matrix_csv, "Name")[i]
     sge = cleaning(ID)
     print(tiempo, file = pyoutput)
-    subprocess.run(["qsub",sge], stdout=pyoutput, stderr=subprocess.STDOUT, shell=False, cwd=None, timeout=None, check=True, encoding=None, errors=None, text=None, env=None, universal_newlines=None)
+    subprocess.run(["qsub",sge], stdout=pyoutput)
     print(tiempo, file = pyoutput)
