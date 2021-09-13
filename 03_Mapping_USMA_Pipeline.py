@@ -280,6 +280,6 @@ for i in range(0, len(smpls_ID)):
     sample_name = extcol(matrix_csv, "Name")[i]
     ref_name = extcol(reference_csv, "RefName")[0]
     sge = mapping(ID)
-    #print(tiempo, file = pyoutput)
-    #subprocess.run(["qsub",sge], stdout=pyoutput, stderr=subprocess.STDOUT, shell=False, cwd=None, timeout=None, check=True, encoding=None, errors=None, text=None, env=None, universal_newlines=None)
-    #print(tiempo, file = pyoutput)
+    print(tiempo, file = pyoutput)
+    subprocess.run(["qsub",sge], stdout=pyoutput)
+    print(tiempo, file = pyoutput)
