@@ -106,7 +106,7 @@ source /etc/bashrc
 #$ -M ''' + email + '''
 ##
 ## Modules''', file = sge)
-    print ("module load bwa/0.7.4 htslib/1.2.1 gcc/5.1.0 samtools/1.9 picard/2.6.0 r/3.6.1", file = sge)
+    print ("module load bwa/0.7.4 htslib/1.2.1 gcc/5.1.0 samtools/1.9 picard/2.6.0 r/3.6.1 bedtools/2.27.1", file = sge)
     print ("##", file = sge)
     print ("##", file = sge)
 
