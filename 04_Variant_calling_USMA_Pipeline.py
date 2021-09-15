@@ -189,43 +189,6 @@ def variantcall (smpls_ID):
         os.makedirs(annttd_INDEL_PASS_table_path)
     
     
-    
-    
-    
-    stats_path = wd_project + "analysis/stats/"
-    mapp_stats_path = stats_path + "mapp/"
-    if not os.path.exists(mapp_stats_path):
-        os.makedirs(mapp_stats_path)
-    stats_GC_path = mapp_stats_path + "GCBias/"
-    if not os.path.exists(stats_GC_path):
-        os.makedirs(stats_GC_path)
-    Qcycle_stats_path = mapp_stats_path + "Qcycle/"
-    if not os.path.exists(Qcycle_stats_path):
-        os.makedirs(Qcycle_stats_path)
-    Qdist_stats_path = mapp_stats_path + "Qdist/"
-    if not os.path.exists(Qdist_stats_path):
-        os.makedirs(Qdist_stats_path)
-    dupMtrx_stats_path = mapp_stats_path + "DupMatrix/"
-    if not os.path.exists(dupMtrx_stats_path):
-        os.makedirs(dupMtrx_stats_path)
-    summ_stats_path = mapp_stats_path + "Summary/"
-    if not os.path.exists(summ_stats_path):
-        os.makedirs(summ_stats_path)
-    fig_path = wd_project + "analysis/figures/"
-    fig_GCpdf_path = fig_path + "GCBias_pdf/"
-    fig_Qcycle_path = fig_path + "Qcycle_pdf/"
-    fig_Qdist_path = fig_path + "Qdist_pdf/"
-    if not os.path.exists(fig_path):
-        os.makedirs(fig_path)
-    if not os.path.exists(fig_GCpdf_path):
-        os.makedirs(fig_GCpdf_path)
-    if not os.path.exists(fig_Qcycle_path):
-        os.makedirs(fig_Qcycle_path)
-    if not os.path.exists(fig_Qdist_path):
-        os.makedirs(fig_Qdist_path)
-    # Names
-    
-    
     bam_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".mrkdup.addgp.bam"
     bam_name_2 = smpls_ID + "_" + sample_name + "_bamout_VC.bam"
     g_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".g.vcf.gz" # compress
@@ -276,10 +239,10 @@ def variantcall (smpls_ID):
     print ("#", file = sge)
     print ('''awk '/^#/||$7=="PASS"' ''' + INDEL_flt_vcf_path + INDEL_flt_vcf_name + " > " + INDEL_flt_vcf_PASS_path + INDEL_flt_vcf_PASS_name, file = sge)
     print ("#", file = sge)
-    print ("## Annotating the files", file = sge)
+    print ("## ANNOTATING THE VARIANTS IN THE VCF FILES", file = sge)
     print ("# raw vcf files", file = sge)
     print ("# SNP", file = sge)
-    print ("bcftools csq -f " + reference_genome + " -g " + gff_file + SNP_vcf_path + SNP_vcf_name + " -Oz -o " + annttd_SNP_path + annttd_SNP_name, file = sge)
+    print ("bcftools csq -f " + reference_genome + " -g " + gff_file + " " + SNP_vcf_path + SNP_vcf_name + " -Oz -o " + annttd_SNP_path + annttd_SNP_name, file = sge)
     print ("bcftools query -f'[%CHROM\\t%POS\\t%SAMPLE\\t%TBCSQ\\n]' " + annttd_SNP_path + annttd_SNP_name + " > " + annttd_SNP_raw_table_path + smpls_ID + "_" + sample_name + "_raw_AnnTable.txt", file = sge)
     print ('''awk -F"," '{print $1"\\t"$3}' ''' + annttd_SNP_raw_table_path + smpls_ID + "_" + sample_name + '''_raw_AnnTable.txt | awk -F"|" '{print $1"\\t"$2"\\t"$3"\\t"$4"\\t"$5"\\t"$6"\\t"$7}' > ''' + annttd_SNP_raw_table_path + smpls_ID + "_" + sample_name + "_raw_AnnTable.txt2", file = sge)
     print ("rm " + annttd_SNP_raw_table_path + smpls_ID + "_" + sample_name + "_raw_AnnTable.txt", file = sge)
@@ -287,48 +250,51 @@ def variantcall (smpls_ID):
     print ("rm " + annttd_SNP_raw_table_path + smpls_ID + "_" + sample_name + "_raw_AnnTable.txt2", file = sge)
     print ("#", file = sge) 
     print ("# INDEL", file = sge)
-    print ("bcftools csq -f " + genom_ref + " -g " + gff_path + "/USMA_521_v2_allChr.gff " + INDEL_vcf_path + "/" + INDEL_vcf_name + ".gz -Oz -o " + annttd_INDEL_path + "/" + annttd_INDEL_name, file = sge)   
-    print ("bcftools query -f'[%CHROM\\t%POS\\t%SAMPLE\\t%TBCSQ\\n]' " + annttd_INDEL_path + "/" + annttd_INDEL_name + " > " + annttd_INDEL_raw_table_path + "/" + shrt_name + "_raw_AnnTable.txt", file = sge)
-    print ('''awk -F"," '{print $1"\\t"$2"\\t"$3"\\t"$5"\\t"}' ''' + annttd_INDEL_raw_table_path + "/" + shrt_name + '''_raw_AnnTable.txt | awk -F"|" '{print $1"\\t"$2"\\t"$3"\\t"$5"\\t"$6"\\t"$7"\\t"$8"\\t"$9"\\t"$10}' > ''' + annttd_INDEL_raw_table_path + "/" + shrt_name + "_raw_AnnTable.txt2", file = sge)
-    print ("rm " + annttd_INDEL_raw_table_path + "/" + shrt_name + "_raw_AnnTable.txt", file = sge)
-    print ("cp " + annttd_INDEL_raw_table_path + "/" + shrt_name + "_raw_AnnTable.txt2 " + annttd_INDEL_raw_table_path + "/" + shrt_name + "_raw_AnnTable.txt", file = sge)
-    print ("rm " + annttd_INDEL_raw_table_path + "/" + shrt_name + "_raw_AnnTable.txt2", file = sge)
+    print ("bcftools csq -f " + reference_genome + " -g " + gff_file + " " + INDEL_vcf_path + INDEL_vcf_name + " -Oz -o " + annttd_INDEL_path + annttd_INDEL_name, file = sge)   
+    print ("bcftools query -f'[%CHROM\\t%POS\\t%SAMPLE\\t%TBCSQ\\n]' " + annttd_INDEL_path + annttd_INDEL_name + " > " + annttd_INDEL_raw_table_path + shrt_name + "_raw_AnnTable.txt", file = sge)
+    print ('''awk -F"," '{print $1"\\t"$2"\\t"$3"\\t"$5"\\t"}' ''' + annttd_INDEL_raw_table_path + smpls_ID + "_" + sample_name+ '''_raw_AnnTable.txt | awk -F"|" '{print $1"\\t"$2"\\t"$3"\\t"$5"\\t"$6"\\t"$7"\\t"$8"\\t"$9"\\t"$10}' > ''' + annttd_INDEL_raw_table_path + smpls_ID + "_" + sample_name+ "_raw_AnnTable.txt2", file = sge)
+    print ("rm " + annttd_INDEL_raw_table_path + smpls_ID + "_" + sample_name+ "_raw_AnnTable.txt", file = sge)
+    print ("cp " + annttd_INDEL_raw_table_path + smpls_ID + "_" + sample_name+ "_raw_AnnTable.txt2 " + annttd_INDEL_raw_table_path + smpls_ID + "_" + sample_name+ "_raw_AnnTable.txt", file = sge)
+    print ("rm " + annttd_INDEL_raw_table_path + smpls_ID + "_" + sample_name+ "_raw_AnnTable.txt2", file = sge)
     print ("#", file = sge)
+    print ("# filtered vcf files", file = sge)
+    print ("#", file = sge)
+    print ("# SNP", file = sge)
+    print ("bcftools csq -f " + reference_genome + " -g " + gff_file + " " + SNP_flt_vcf_path + SNP_flt_vcf_gz_name + " -Oz -o " + annttd_SNP_path + annttd_SNP_flt_name, file = sge)
+    print ("bcftools query -f'[%CHROM\\t%POS\\t%SAMPLE\\t%TBCSQ\\n]' " + annttd_SNP_path + annttd_SNP_flt_name + " > " + annttd_SNP_flt_table_path + smpls_ID + "_" + sample_name + "_flt_AnnTable.txt", file = sge)
+    print ('''awk -F"," '{print $1"\\t"$3}' ''' + annttd_SNP_flt_table_path + smpls_ID + "_" + sample_name + '''_flt_AnnTable.txt | awk -F"|" '{print $1"\\t"$2"\\t"$3"\\t"$4"\\t"$5"\\t"$6"\\t"$7}' > ''' + annttd_SNP_flt_table_path + smpls_ID + "_" + sample_name + "_flt_AnnTable.txt2", file = sge)
+    print ("rm " + annttd_SNP_flt_table_path + smpls_ID + "_" + sample_name + "_flt_AnnTable.txt", file = sge)
+    print ("cp " + annttd_SNP_flt_table_path + smpls_ID + "_" + sample_name + "_flt_AnnTable.txt2 " + annttd_SNP_flt_table_path + smpls_ID + "_" + sample_name + "_flt_AnnTable.txt", file = sge)
+    print ("rm " + annttd_SNP_flt_table_path + smpls_ID + "_" + sample_name + "_flt_AnnTable.txt2", file = sge)
+    print ("#", file = sge)
+    print ("# INDEL", file = sge)
+    print ("bcftools csq -f " + reference_genome + " -g " + gff_file + " " + INDEL_flt_vcf_path + INDEL_flt_vcf_gz_name + " -Oz -o " + annttd_INDEL_path + annttd_INDEL_flt_name, file = sge)
+    print ("bcftools query -f'[%CHROM\\t%POS\\t%SAMPLE\\t%TBCSQ\\n]' " + annttd_INDEL_path + annttd_INDEL_flt_name + " > " + annttd_INDEL_flt_table_path + smpls_ID + "_" + sample_name + "_flt_AnnTable.txt", file = sge)
+    print ('''awk -F"," '{print $1"\\t"$2"\\t"$3"\\t"$5"\\t"}' ''' + annttd_INDEL_flt_table_path + smpls_ID + "_" + sample_name + '''_flt_AnnTable.txt | awk -F"|" '{print $1"\\t"$2"\\t"$3"\\t"$5"\\t"$6"\\t"$7"\\t"$8"\\t"$9"\\t"$10}' > ''' + annttd_INDEL_flt_table_path + smpls_ID + "_" + sample_name + "_flt_AnnTable.txt2", file = sge)
+    print ("rm " + annttd_INDEL_flt_table_path + smpls_ID + "_" + sample_name + "_flt_AnnTable.txt", file = sge)
+    print ("cp " + annttd_INDEL_flt_table_path + smpls_ID + "_" + sample_name + "_flt_AnnTable.txt2 " + annttd_INDEL_flt_table_path + smpls_ID + "_" + sample_name + "_flt_AnnTable.txt", file = sge)
+    print ("rm " + annttd_INDEL_flt_table_path + smpls_ID + "_" + sample_name + "_flt_AnnTable.txt2", file = sge)
+    print ("#", file = sge)
+    print ("# filtered and PASS vcf files", file = sge)
+    print ("# SNP", file = sge)
+    print ("bcftools csq -f " + reference_genome + " -g " + gff_file + " " + SNP_flt_vcf_PASS_path + SNP_flt_vcf_gz_PASS_name + " -Oz -o " + annttd_SNP_path + annttd_SNP_PASS_name, file = sge)
+    print ("bcftools query -f'[%CHROM\\t%POS\\t%SAMPLE\\t%TBCSQ\\n]' " + annttd_SNP_path + annttd_SNP_PASS_name + " > " + annttd_SNP_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt", file = sge)
+    print ('''awk -F"," '{print $1"\\t"$3}' ''' + annttd_SNP_PASS_table_path + smpls_ID + "_" + sample_name + '''_PASS_AnnTable.txt | awk -F"|" '{print $1"\\t"$2"\\t"$3"\\t"$4"\\t"$5"\\t"$6"\\t"$7}' > ''' + annttd_SNP_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt2", file = sge)
+    print ("rm " + annttd_SNP_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt", file = sge)
+    print ("cp " + annttd_SNP_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt2 " + annttd_SNP_PASS_table_path + smpls_ID + "_" + sample_name+ "_PASS_AnnTable.txt", file = sge)
+    print ("rm " + annttd_SNP_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt2", file = sge)
+    print ("#", file = sge)
+    print ("# INDEL", file = sge)
+    print ("bcftools csq -f " + reference_genome + " -g " + gff_file + " " + INDEL_flt_vcf_PASS_path + INDEL_flt_vcf_gz_PASS_name + " -Oz -o " + annttd_INDEL_path + annttd_INDEL_PASS_name, file = sge)
+    print ("bcftools query -f'[%CHROM\\t%POS\\t%SAMPLE\\t%TBCSQ\\n]' " + annttd_INDEL_path + annttd_INDEL_PASS_name + " > " + annttd_INDEL_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt", file = sge)
+    print ('''awk -F"," '{print $1"\\t"$2"\\t"$3"\\t"$5"\\t"}' ''' + annttd_INDEL_PASS_table_path + smpls_ID + "_" + sample_name + '''_PASS_AnnTable.txt | awk -F"|" '{print $1"\\t"$2"\\t"$3"\\t"$5"\\t"$6"\\t"$7"\\t"$8"\\t"$9"\\t"$10}' > ''' + annttd_INDEL_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt2", file = sge)
+    print ("rm " + annttd_INDEL_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt", file = sge)
+    print ("cp " + annttd_INDEL_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt2 " + annttd_INDEL_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt", file = sge)
+    print ("rm " + annttd_INDEL_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt2", file = sge)   
+    print ("", file = sge)
+    print ("", file = sge)
+    print ("## TsTv cuantification", file = sge)
     
-    print ("", file =sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    ## Insert size
-    print ("", file = sge )
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    ## Coverage
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
-    print ("", file = sge)
     print ("", file = sge)
     print ("", file = sge)
     print ("", file = sge)
