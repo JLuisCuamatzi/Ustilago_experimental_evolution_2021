@@ -33,17 +33,19 @@ ag.add_argument("-d", "--directory", default = "/home/jcuamatzi", help = "path t
 ag.add_argument("-t", "--task", default = "", help = "Task")
 ag.add_argument("-M", "--memory", default = "2", help = "RAM memory")
 ag.add_argument("-w", "--window",  default = "100", help = "size of the windows in bp")
+ag.add_argument("-g", "--gff",  default = "", help = "size of the windows in bp")
 ##
 #
 args = vars(ag.parse_args())
 arg_file = args["file"]
-arg_reference = args["ref"]
+reference_genome = str(args["ref"])
 email = str(args["email"])
 map_tool = str(args["mapping"])
 directory = str(args["directory"])
 task = str(args["task"])
 memory = str(args["memory"])
 window = str(args["window"])
+gff_file = str(args["gff"])
 ##### Functions #####
 # Function to open a csv file
 # With this function, we are only open the file
@@ -118,7 +120,6 @@ def variantcall (smpls_ID):
     header(smpls_ID,sge)
     # Reference
     reference_genome = wd_ref + "/" + ref_name + ".fa"
-    gff_path = "/mnt/Timina/lmorales/Public/Ustilago/reference/annotation"
     ## Mapping requirements
     ## Paths
     bam_path = wd_project + "data/bam/"
@@ -315,11 +316,9 @@ def variantcall (smpls_ID):
 ##### MAIN #####
 ## OPEN FILE ##
 matrix_csv = opencsv(arg_file)
-reference_csv = opencsv(arg_reference)
 wd_project = directory
 ## IDs & NAMES ##
 smpls_ID = extcol(matrix_csv, "#ID")
-wd_ref = extcol(reference_csv, "RefPath")[0]
 pyout_name = wd_project + "/log/Py_scripts/" + task + "/" + fecha + "_" + task + "_py.out"
 if not os.path.exists(wd_project + "/log/Py_scripts/" + task + "/"):
             os.makedirs(wd_project + "/log/Py_scripts/" + task + "/")
@@ -328,7 +327,6 @@ pyoutput = open(pyout_name, "a+")
 for i in range(0, len(smpls_ID)):
     ID = smpls_ID[i]
     sample_name = extcol(matrix_csv, "Name")[i]
-    ref_name = extcol(reference_csv, "RefName")[0]
     sge = variantcall(ID)
     #print(tiempo, file = pyoutput)
     #subprocess.run(["qsub",sge], stdout=pyoutput, stderr=subprocess.STDOUT, shell=False, cwd=None, timeout=None, check=True, encoding=None, errors=None, text=None, env=None, universal_newlines=None)
