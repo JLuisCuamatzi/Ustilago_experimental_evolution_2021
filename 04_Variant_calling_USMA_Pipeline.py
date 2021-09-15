@@ -295,6 +295,13 @@ def variantcall (smpls_ID):
     print ("", file = sge)
     print ("## TsTv cuantification", file = sge)
     
+    print ("# filtered and PASS vcf files", file = sge)
+    print ("vcftools --vcf " + SNP_flt_vcf_PASS_path + "/" + SNP_flt_vcf_PASS_name + " --out " + TsTv_flt_PASS_path + "/" + smpls_ID + "_" + sample_name + " --TsTv-summary", file = sge)
+    print ("## insertions and deletions cuantification", file = sge)
+    print ("# filtered and PASS vcf files", file = sge)
+    print ('''vcf2bed --insertions < ''' + INDEL_flt_vcf_PASS_path + "/" + INDEL_flt_vcf_PASS_name + " | wc -l > " + insrts_flt_PASS_path + "/" + shrt_name + "_PASS_insertions.txt", file = sge)
+    print ('''vcf2bed --deletions < ''' + INDEL_flt_vcf_PASS_path + "/" + INDEL_flt_vcf_PASS_name + " | wc -l > " + deltns_flt_PASS_path + "/" + shrt_name + "_PASS_deletions.txt", file = sge)
+    
     print ("", file = sge)
     print ("", file = sge)
     print ("", file = sge)
