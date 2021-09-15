@@ -12,7 +12,7 @@
 # How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/04_Variant_calling_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t VC -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2.csv -M 16 -w 200
 
 #testing
-# python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/04_Variant_calling_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/Pipeline_testing/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/Pipeline_testing/ID_test.csv -t VC -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2/USMA_521_v2.fa -M 16 -g /mnt/Timina/lmorales/Public/Ustilago/reference/annotation/USMA_521_v2_allChr.gff -n jcuamatzi@liigh.unam.mx
+# python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/04_Variant_calling_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/Pipeline_testing/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/Pipeline_testing/ID_test.csv -t VC -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2/USMA_521_v2.fa -M 16 -g /mnt/Timina/lmorales/Public/Ustilago/reference/annotation/USMA_521_v2_allChr.gff -n jcuamatzi@liigh.unam.mx -p 1
 ###############################################################################################################################################
 ## Libraries
 import argparse
@@ -36,6 +36,7 @@ ag.add_argument("-t", "--task", default = "", help = "Task")
 ag.add_argument("-m", "--maptool", default = "BWA")
 ag.add_argument("-M", "--memory", default = "2", help = "RAM memory")
 ag.add_argument("-g", "--gff",  default = "", help = "gff file")
+ag.add_argument("-p", "--ploidy", default = "", help = "sample ploidy")
 ##
 #
 args = vars(ag.parse_args())
@@ -47,6 +48,7 @@ map_tool = str(args["maptool"])
 task = str(args["task"])
 memory = str(args["memory"])
 gff_file = str(args["gff"])
+ploidy = str(args["ploidy"])
 ##### Functions #####
 # Function to open a csv file
 # With this function, we are only open the file
@@ -191,18 +193,19 @@ def variantcall (smpls_ID):
     
     
     bam_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".mrkdup.addgp.bam"
-    bam_name_2 = smpls_ID + "_" + sample_name + "_bamout_VC.bam"
+    
     bamout = bam_path + "bamout_VC/"
     if not os.path.exists(bamout):
         os.makedirs(bamout)
+    bam_name_2 = smpls_ID + "_" + sample_name + "_bamout_VC.bam"
     g_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".g.vcf.gz" # compress
     gt_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".gt.g.vcf.gz"
     SNP_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".gt.SNP.g.vcf.gz"
     SNP_flt_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_SNP_flt.vcf.gz"
-    SNP_flt_vcf_PASS_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_SNP_flt_PASS.vcf.gz"
+    SNP_flt_vcf_PASS_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_SNP_flt_PASS.vcf"
     INDEL_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".gt.INDEL.g.vcf.gz"
     INDEL_flt_vcf_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_INDEL_flt.vcf.gz"
-    INDEL_flt_vcf_PASS_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_INDEL_flt_PASS.vcf.gz"
+    INDEL_flt_vcf_PASS_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_INDEL_flt_PASS.vcf"
     SNP_flt_vcf_gz_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_SNP_flt.vcf.gz"
     INDEL_flt_vcf_gz_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_INDEL_flt.vcf.gz"
     SNP_flt_vcf_gz_PASS_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_SNP_flt_PASS.vcf.gz"
@@ -232,21 +235,29 @@ def variantcall (smpls_ID):
     print ('''start=$(date +%s.%N)''', file = sge)
     print ("## VARIANT CALLING", file = sge )
     print ("#", file = sge)
-    print ('''gatk --java-options "-Xmx16g" HaplotypeCaller -R ''' + reference_genome + " -I " + bam_path + bam_name + " -O " + g_vcf_path + g_vcf_name + " -bamout " + bamout + bam_name_2 + " --sample-ploidy 1 --annotation DepthPerSampleHC --annotation StrandBiasBySample --annotation AlleleFraction --annotation AS_FisherStrand --annotation ChromosomeCounts --dont-use-soft-clipped-bases TRUE -ERC GVCF", file = sge)
+    print ('''gatk --java-options "-Xmx16g" HaplotypeCaller -R ''' + reference_genome + " -I " + bam_path + bam_name + " -O " + g_vcf_path + g_vcf_name + " -bamout " + bamout + bam_name_2 + " --sample-ploidy " + ploidy + " --annotation DepthPerSampleHC --annotation StrandBiasBySample --annotation AlleleFraction --annotation AS_FisherStrand --annotation ChromosomeCounts --dont-use-soft-clipped-bases TRUE -ERC GVCF", file = sge)
     print ("#", file = sge)
-    print ('''gatk --java-options "-Xmx16g" GenotypeGVCFs -R ''' + reference_genome + " -V " + g_vcf_path + g_vcf_name + " -O " + gt_vcf_path + gt_vcf_name + " --sample-ploidy 1 --annotation DepthPerSampleHC --annotation StrandBiasBySample --annotation AlleleFraction --annotation AS_FisherStrand --annotation ChromosomeCounts", file = sge)
+    print ('''gatk --java-options "-Xmx16g" GenotypeGVCFs -R ''' + reference_genome + " -V " + g_vcf_path + g_vcf_name + " -O " + gt_vcf_path + gt_vcf_name + " --sample-ploidy " + ploidy + " --annotation DepthPerSampleHC --annotation StrandBiasBySample --annotation AlleleFraction --annotation AS_FisherStrand --annotation ChromosomeCounts", file = sge)
     print ("#", file = sge)
     print ('''gatk --java-options "-Xmx16g" SelectVariants -R ''' + reference_genome + " -V " + gt_vcf_path + gt_vcf_name + " --select-type-to-include SNP -O " + SNP_vcf_path + SNP_vcf_name, file = sge)
     print ("#", file = sge)
     print ("gatk VariantFiltration -R " + reference_genome + " -V " + SNP_vcf_path + SNP_vcf_name + " -O " + SNP_flt_vcf_path + SNP_flt_vcf_name + ''' --filter-name "SNP_QD_FS_MQ_SOR_filters" --filter-expression "QD < 2.0 || FS > 60.0 || MQ < 40.0 || SOR > 3.0"''', file = sge)
     print ("#", file = sge)
-    print ('''awk '/^#/||$7=="PASS"' ''' + SNP_flt_vcf_path + SNP_flt_vcf_name + " > " + SNP_flt_vcf_PASS_path + SNP_flt_vcf_PASS_name, file = sge)
     print ("#", file = sge)
+    print ("zcat " + SNP_flt_vcf_path + SNP_flt_vcf_name + ''' | awk '/^#/||$7=="PASS"' > ''' + SNP_flt_vcf_PASS_path + SNP_flt_vcf_PASS_name, file = sge)
     print ('''gatk --java-options "-Xmx16g" SelectVariants -R ''' + reference_genome + " -V " + gt_vcf_path + gt_vcf_name + " --select-type-to-include INDEL -O " + INDEL_vcf_path + INDEL_vcf_name, file = sge)
     print ("#", file = sge)
     print ("gatk VariantFiltration -R " + reference_genome + " -V " + INDEL_vcf_path + INDEL_vcf_name + " -O " + INDEL_flt_vcf_path + INDEL_flt_vcf_name + ''' --filter-name "INDEL_QD_FS_Q_filters" --filter-expression "QD < 2.0 || FS > 200.0 || QUAL < 30.0"''', file = sge)
     print ("#", file = sge)
-    print ('''awk '/^#/||$7=="PASS"' ''' + INDEL_flt_vcf_path + INDEL_flt_vcf_name + " > " + INDEL_flt_vcf_PASS_path + INDEL_flt_vcf_PASS_name, file = sge)
+    print ("zcat " + INDEL_flt_vcf_path + INDEL_flt_vcf_name + ''' | awk '/^#/||$7=="PASS"' > ''' + INDEL_flt_vcf_PASS_path + INDEL_flt_vcf_PASS_name, file = sge)
+    print ("#", file = sge)
+    print ("## Compressing the vcf files that pass the filters", file = sge)
+    print ("bcftools view " + SNP_flt_vcf_PASS_path + SNP_flt_vcf_PASS_name + " -Oz -o " + SNP_flt_vcf_PASS_path + SNP_flt_vcf_gz_PASS_name, file = sge)
+    print ("bcftools index " + SNP_flt_vcf_PASS_path + SNP_flt_vcf_gz_PASS_name, file = sge)
+    print ("#", file = sge)
+    print ("bcftools view " + INDEL_flt_vcf_PASS_path + INDEL_flt_vcf_PASS_name + " -Oz -o " + INDEL_flt_vcf_PASS_path + INDEL_flt_vcf_gz_PASS_name, file = sge)
+    print ("bcftools index " + INDEL_flt_vcf_PASS_path + INDEL_flt_vcf_gz_PASS_name, file = sge)
+    print ("#", file = sge)
     print ("#", file = sge)
     print ("## ANNOTATING THE VARIANTS IN THE VCF FILES", file = sge)
     print ("# raw vcf files", file = sge)
@@ -260,7 +271,7 @@ def variantcall (smpls_ID):
     print ("#", file = sge) 
     print ("# INDEL", file = sge)
     print ("bcftools csq -f " + reference_genome + " -g " + gff_file + " " + INDEL_vcf_path + INDEL_vcf_name + " -Oz -o " + annttd_INDEL_path + annttd_INDEL_name, file = sge)   
-    print ("bcftools query -f'[%CHROM\\t%POS\\t%SAMPLE\\t%TBCSQ\\n]' " + annttd_INDEL_path + annttd_INDEL_name + " > " + annttd_INDEL_raw_table_path + smpls_ID + sample_name + "_raw_AnnTable.txt", file = sge)
+    print ("bcftools query -f'[%CHROM\\t%POS\\t%SAMPLE\\t%TBCSQ\\n]' " + annttd_INDEL_path + annttd_INDEL_name + " > " + annttd_INDEL_raw_table_path + smpls_ID + "_" + sample_name + "_raw_AnnTable.txt", file = sge)
     print ('''awk -F"," '{print $1"\\t"$2"\\t"$3"\\t"$5"\\t"}' ''' + annttd_INDEL_raw_table_path + smpls_ID + "_" + sample_name+ '''_raw_AnnTable.txt | awk -F"|" '{print $1"\\t"$2"\\t"$3"\\t"$5"\\t"$6"\\t"$7"\\t"$8"\\t"$9"\\t"$10}' > ''' + annttd_INDEL_raw_table_path + smpls_ID + "_" + sample_name+ "_raw_AnnTable.txt2", file = sge)
     print ("rm " + annttd_INDEL_raw_table_path + smpls_ID + "_" + sample_name+ "_raw_AnnTable.txt", file = sge)
     print ("cp " + annttd_INDEL_raw_table_path + smpls_ID + "_" + sample_name+ "_raw_AnnTable.txt2 " + annttd_INDEL_raw_table_path + smpls_ID + "_" + sample_name+ "_raw_AnnTable.txt", file = sge)
