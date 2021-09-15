@@ -34,7 +34,7 @@ ag.add_argument("-n", "--email", default = "jcuamatzi@liigh.unam.mx", help = "If
 ag.add_argument("-r", "--ref", default = "/mnt/Timina/lmorales/Public/Ustilago/referece/USMA_521_v2/", help = "path to the reference genome")
 ag.add_argument("-d", "--directory", default = "/home/jcuamatzi", help = "path to the project directory")
 ag.add_argument("-t", "--task", default = "", help = "Task")
-ag.add_argument("-w", "--window",  default = "1000", help = "size of the windows in bp")
+ag.add_argument("-w", "--window",  default = "100", help = "size of the windows in bp")
 ag.add_argument("-M", "--memory", default = "2", help = "RAM memory")
 ##
 #
