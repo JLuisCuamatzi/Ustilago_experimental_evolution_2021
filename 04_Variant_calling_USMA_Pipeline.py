@@ -222,7 +222,6 @@ def variantcall (smpls_ID):
     deltns_flt_PASS_path = wd_project + "analysis/vcf/INDEL/deletions/PASS/"
     if not os.path.exists(deltns_flt_PASS_path):
         os.makedirs(deltns_flt_PASS_path)
-    
     annttd_SNP_name = smpls_ID + "_" + sample_name + "_SNP_raw_annotated.vcf.gz"
     annttd_INDEL_name = smpls_ID + "_" + sample_name + "_INDEL_raw_annotated.vcf.gz"
     annttd_SNP_flt_name = smpls_ID + "_" + sample_name + "_SNP_flt_annotated.vcf.gz"
@@ -231,7 +230,27 @@ def variantcall (smpls_ID):
     annttd_INDEL_PASS_name = smpls_ID + "_" + sample_name + "_INDEL_PASS_annotated.vcf.gz"
     annttd_SNP_PASS_BG_name = smpls_ID + "_" + sample_name + "_SNP_PASS_BG_annotated.vcf.gz"
     annttd_INDEL_PASS_BG_name = smpls_ID + "_" + sample_name + "_INDEL_PASS_BG_annotated.vcf.gz"
-    
+    SNP_position_path = wd_project + "analysis/04_vc/filters/SNP_position/"
+    if not os.path.exists(SNP_position_path):
+        os.makedirs(SNP_position_path)
+    SNP_pos_name = smpls_ID + "_" + sample_name + "_SNP_Position.txt"
+    SNP_QD_path = wd_project + "analysis/04_vc/filters/QD/"
+    if not os.path.exists(SNP_QD_path):
+        os.makedirs(SNP_QD_path)
+    SNP_QD_name = smpls_ID + "_" + sample_name + "_SNP_QD.txt"
+    SNP_FS_path = wd_project + "analysis/04_vc/filters/FS/"
+    if not os.path.exists(SNP_FS_path):
+        os.makedirs(SNP_FS_path)
+    SNP_FS_name = smpls_ID + "_" + sample_name + "_SNP_FS.txt"
+    SNP_SOR_path = wd_project + "analysis/04_vc/filters/SOR/"
+    if not os.path.exists(SNP_SOR_path):
+        os.makedirs(SNP_SOR_path)
+    SNP_SOR_name = smpls_ID + "_" + sample_name + "_SNP_SOR.txt"
+    SNP_MQ_path = wd_project + "analysis/04_vc/filters/MQ/"
+    if not os.path.exists(SNP_MQ_path):
+        os.makedirs(SNP_MQ_path)
+    SNP_MQ_name = smpls_ID + "_" + sample_name + "_SNP_MQ.txt"
+    #
     print ('''start=$(date +%s.%N)''', file = sge)
     print ("## VARIANT CALLING", file = sge )
     print ("#", file = sge)
@@ -311,8 +330,8 @@ def variantcall (smpls_ID):
     print ("rm " + annttd_INDEL_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt", file = sge)
     print ("cp " + annttd_INDEL_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt2 " + annttd_INDEL_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt", file = sge)
     print ("rm " + annttd_INDEL_PASS_table_path + smpls_ID + "_" + sample_name + "_PASS_AnnTable.txt2", file = sge)   
-    print ("", file = sge)
-    print ("", file = sge)
+    print ("#", file = sge)
+    print ("#", file = sge)
     print ("## TsTv cuantification", file = sge)
     print ("# filtered and PASS vcf files", file = sge)
     print ("vcftools --vcf " + SNP_flt_vcf_PASS_path  + SNP_flt_vcf_PASS_name + " --out " + TsTv_flt_PASS_path + smpls_ID + "_" + sample_name + " --TsTv-summary", file = sge)
@@ -320,7 +339,33 @@ def variantcall (smpls_ID):
     print ("# filtered and PASS vcf files", file = sge)
     print ('''vcf2bed --insertions < ''' + INDEL_flt_vcf_PASS_path + INDEL_flt_vcf_PASS_name + " | wc -l > " + insrts_flt_PASS_path + smpls_ID + "_" + sample_name + "_PASS_insertions.txt", file = sge)
     print ('''vcf2bed --deletions < ''' + INDEL_flt_vcf_PASS_path + INDEL_flt_vcf_PASS_name + " | wc -l > " + deltns_flt_PASS_path + smpls_ID + "_" + sample_name + "_PASS_deletions.txt", file = sge)
-    print ("", file = sge)
+    print ("#", file = sge)
+    print ("#", file = sge)
+    print ("# SNP by parameters", file = sge)
+    print ("#", file = sge)
+    print ("# SNP position", file = sge)
+    print ('''zgrep -P "\w+\\t" ''' + gt_vcf_path + gt_vcf_name + ''' | awk -F "\\t" '{print $1"\\t"$2}' | sed '1d' > ''' + SNP_position_path + SNP_pos_name, file = sge)
+    print ("# QD value", file = sge)
+    print ('''zgrep -P "\w+\\t" ''' + gt_vcf_path + gt_vcf_name + ''' |  awk -F "\\t" '{print $1"\\t"$2"\\t"$8}' | grep -oE ";QD=\w+.\w+" | awk -F "=" '{print$2}' >  ''' + SNP_QD_path + sample_name + "_QD_value." + smpls_ID + "tmp.txt", file = sge)
+    print ("paste " + SNP_position_path + SNP_pos_name + " " + SNP_QD_path + sample_name + "_QD_value." + smpls_ID + "tmp.txt > " + SNP_QD_path + sample_name + "_QD_value.2." + smpls_ID + "tmp.txt", file = sge)
+    print ('''echo -e "Chr\\tPos\\tQD" | cat - ''' + SNP_QD_path + sample_name + "_QD_value.2." + smpls_ID + "tmp.txt > " + SNP_QD_path + SNP_QD_name, file = sge)
+    print ("rm " + SNP_QD_path + "*." + smpls_ID + "tmp.txt", file = sge)
+    print ("# FS filter", file = sge)
+    print ('''zgrep -P "\w+\\t" ''' + gt_vcf_path + gt_vcf_name + ''' | awk -F "\\t" '{print $1"\\t"$2"\\t"$8}' | grep -oE ";FS=\w+.\w+" | awk -F "=" '{print $2}' > ''' + SNP_FS_path + sample_name + "_FS_value." + smpls_ID + "tmp.txt", file = sge)
+    print ("paste " + SNP_position_path + SNP_pos_name + " " + SNP_FS_path + sample_name + "_FS_value." + smpls_ID + "tmp.txt > " + SNP_FS_path + sample_name + "_FS_value.2." + smpls_ID + "tmp.txt", file = sge)
+    print ('''echo -e "Chr\\tPos\\tFS" | cat - ''' + SNP_FS_path + sample_name + "_FS_value.2." + smpls_ID + "tmp.txt > " + SNP_FS_path + SNP_FS_name, file = sge)
+    print ("rm " + SNP_FS_path + "*." + smpls_ID + "tmp.txt", file = sge)
+    print ("# SOR filter", file = sge)
+    print ('''zgrep -P "\w+\\t" ''' + gt_vcf_path + gt_vcf_name + ''' | awk -F "\\t" '{print $1"\\t"$2"\\t"$8}' | grep -oE ";SOR=\w+.\w+" | awk -F "=" '{print $2}' > ''' + SNP_SOR_path + sample_name + "_SOR_value." + smpls_ID + "tmp.txt", file = sge)
+    print ("paste " + SNP_position_path + SNP_pos_name + " " + SNP_SOR_path + sample_name + "_SOR_value." + smpls_ID + "tmp.txt > " + SNP_SOR_path + sample_name + "_SOR_value.2." + smpls_ID + "tmp.txt", file = sge)
+    print ('''echo -e "Chr\\tPos\\tSOR" | cat - ''' + SNP_SOR_path + sample_name + "_SOR_value.2." + smpls_ID + "tmp.txt > " + SNP_SOR_path + SNP_SOR_name, file = sge)
+    print ("rm " + SNP_SOR_path + "*." + smpls_ID + "tmp.txt", file = sge)   
+    
+    print ("# MQ filter", file = sge)
+    print ('''zgrep -P "\w+\\t" ''' + gt_vcf_path + gt_vcf_name + ''' | awk -F "\\t" '{print $1"\\t"$2"\\t"$8}' | grep -oE ";MQ=\w+.\w+" | awk -F "=" '{print $2}' > ''' + SNP_MQ_path + sample_name + "_MQ_value." + smpls_ID + "tmp.txt", file = sge)
+    print ("paste " + SNP_position_path + SNP_pos_name + " " + SNP_MQ_path + sample_name + "_MQ_value." + smpls_ID + "tmp.txt > " + SNP_MQ_path + sample_name + "_MQ_value.2." + smpls_ID + "tmp.txt", file = sge)
+    print ('''echo -e "Chr\\tPos\\tFS" | cat - ''' + SNP_MQ_path + sample_name + "_MQ_value.2." + smpls_ID + "tmp.txt > " + SNP_MQ_path + SNP_MQ_name, file = sge)
+    print ("rm " + SNP_MQ_path + "*." + smpls_ID + "tmp.txt", file = sge)    
     sge.close()
     return sge_name  
 # Update 15/09/2021
@@ -341,5 +386,5 @@ for i in range(0, len(smpls_ID)):
     sample_name = extcol(matrix_csv, "Name")[i]
     sge = variantcall(ID)
     print(tiempo, file = pyoutput)
-    subprocess.run(["qsub",sge], stdout=pyoutput)
+    #subprocess.run(["qsub",sge], stdout=pyoutput)
     print(tiempo, file = pyoutput)
