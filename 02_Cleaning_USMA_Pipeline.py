@@ -32,7 +32,7 @@ ag.add_argument("-f", "--file", default = "", help = "csv with information of ID
 ag.add_argument("-n", "--email", default = "jcuamatzi@liigh.unam.mx", help = "If you want to receive a notification when the process is done") 
 ag.add_argument("-d", "--directory", default = "/home/jcuamatzi/", help = "path to the project directory")
 ag.add_argument("-t", "--task", default = "", help = "Task")
-ag.add_argument("-w", "--thread", default = "2", help = "worker thread number, default is 2")
+ag.add_argument("-w", "--thread", default = "2", help = "thread number, default is 2")
 ag.add_argument("-M", "--memory", default = "2", help = "RAM memory")
 ##
 #
