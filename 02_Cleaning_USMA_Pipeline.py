@@ -182,5 +182,5 @@ for i in range(0, len(smpls_ID)):
     sample_name = extcol(matrix_csv, "Name")[i]
     sge = cleaning(ID)
     print(tiempo, file = pyoutput)
-    #subprocess.run(["qsub",sge], stdout=pyoutput)
+    subprocess.run(["qsub",sge], stdout=pyoutput)
     print(tiempo, file = pyoutput)
