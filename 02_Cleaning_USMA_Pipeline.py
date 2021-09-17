@@ -117,7 +117,7 @@ def cleaning(smpls_ID):
     header(smpls_ID,sge)
     ## Cleaning requirements
     ## Paths
-    fastq_raw_path = wd_project + "data/fastq/raw/"
+    fastq_raw_path = wd_project + "data/fastq/raw/" + smpls_ID + "/"
     fastq_clean_path = wd_project + "data/fastq/clean/"
     if not os.path.exists(fastq_clean_path):
         os.makedirs(fastq_clean_path)
