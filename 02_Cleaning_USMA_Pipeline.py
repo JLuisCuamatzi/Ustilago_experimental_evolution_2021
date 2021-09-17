@@ -9,7 +9,7 @@
 ### Input:          A csv file with information and simple paths
 ### Output:         SGE to do mapping and variant calling for several samples
 ###
-# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/02_Cleaning_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t Cleaning -w 10 -M 6 -n jcuamatzi@liigh.unam.mx
+# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/02_Cleaning_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t Clean -w 10 -M 6 -n jcuamatzi@liigh.unam.mx
 # -w threads for fastp
 # -M RAM memory
 # for the -t cannot start with a digit

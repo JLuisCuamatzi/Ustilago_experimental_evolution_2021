@@ -9,7 +9,7 @@
 ### Input:          A csv file with information and simple paths
 ### Output:         SGE to do mapping and variant calling for several samples
 ###
-# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/01_Downloading_fq_files_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t DWN -m 6 -n jcuamatzi@liigh.unam.mx -s s3://funmnljr/F20FTSUSAT1199_FUNmnljR/Filter_SOAPnuke/Clean
+# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/01_Downloading_fq_files_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t Donwload -m 6 -n jcuamatzi@liigh.unam.mx -s s3://funmnljr/F20FTSUSAT1199_FUNmnljR/Filter_SOAPnuke/Clean
 # -w threads for fastp
 # -M RAM memory
 # for the -t cannot start with a digit
