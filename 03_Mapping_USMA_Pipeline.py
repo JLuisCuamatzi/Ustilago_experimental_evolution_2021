@@ -10,7 +10,7 @@
 ### Input:          A csv file with information and simple paths
 ### Output:         SGE to do mapping and variant calling for several samples
 ###
-# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/03_Mapping_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t 03_Mapping -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2.csv -M 8 -w 200
+# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/03_Mapping_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t Mapping -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2.csv -M 8 -w 200
 ###############################################################################################################################################
 ## Libraries
 import argparse
@@ -159,8 +159,8 @@ def mapping (smpls_ID):
     if not os.path.exists(fig_Qdist_path):
         os.makedirs(fig_Qdist_path)
     # Names
-    fastq_name_clean_R1 = smpls_ID + "_" + sample_name + "_R1_clean.fastq.gz"
-    fastq_name_clean_R2 = smpls_ID + "_" + sample_name + "_R2_clean.fastq.gz"
+    fastq_name_clean_R1 = smpls_ID + "_" + sample_name + "_R1_clean.fq.gz"
+    fastq_name_clean_R2 = smpls_ID + "_" + sample_name + "_R2_clean.fq.gz"
     bam_name = smpls_ID + "_" + sample_name + "_" + map_tool + ".bam"
     bam_stat_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_bam_0_status.txt"
     bam_stat1_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_bam_1_status.txt"
