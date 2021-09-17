@@ -130,23 +130,35 @@ def cleaning(smpls_ID):
     fastp_htlml_path = wd_project + "tmp/" + task + "/"
     if not os.path.exists(fastp_htlml_path):
         os.makedirs(fastp_htlml_path)
+    crr_path = wd_project + "analysis/reads_num/raw/" #count raw reads
+    if not os.path.exists(crr_path):
+        os.makedirs(crr_path)
+    ccr_path = wd_project + "analysis/reads_num/clean/" #count clean reads
+    if not os.path.exists(ccr_path):
+        os.makedirs(ccr_path)
     # Names
-    #fastq_name_raw_R1 = smpls_ID + "_" + sample_name + "_R1.fastq.gz" # for compress fastq
-    fastq_name_raw_R1 = smpls_ID + "_" + sample_name + "_R1.fastq" # for uncompress fastq
-    #fastq_name_raw_R2 = smpls_ID + "_" + sample_name + "_R2.fastq.gz" # for compress fastq
-    fastq_name_raw_R2 = smpls_ID + "_" + sample_name + "_R2.fastq" # for uncompress fastq
-    fastq_name_clean_R1 = smpls_ID + "_" + sample_name + "_R1_clean.fastq.gz"
-    fastq_name_clean_R2 = smpls_ID + "_" + sample_name + "_R2_clean.fastq.gz"
+    fastq_name_raw_R1 = smpls_ID + "_1.fq.gz" # for compress fastq
+    #fastq_name_raw_R1 = smpls_ID + "_" + sample_name + "_R1.fastq" # for uncompress fastq
+    fastq_name_raw_R2 = smpls_ID + "_2.fq.gz" # for compress fastq
+    #fastq_name_raw_R2 = smpls_ID + "_" + sample_name + "_R2.fastq" # for uncompress fastq
+    fastq_name_clean_R1 = smpls_ID + "_" + sample_name + "_R1_clean.fq.gz"
+    fastq_name_clean_R2 = smpls_ID + "_" + sample_name + "_R2_clean.fq.gz"
     fastq_name_unpaired = smpls_ID + "_" + sample_name + "_unpaired_clean.fastq.gz"
     json_name = smpls_ID + "_fastp.json"
     html_name = smpls_ID + "_fastp.html"
     #
-    print ("## CLEANING ", file = sge)
     print ('''start=$(date +%s.%N)''', file = sge)
+    print ("# Calculating the number of reads in the raw fastq file",file = sge)
+    print ("echo $(zcat " + fastq_raw_path + fastq_name_raw_R1 + " | wc -l )/4 | bc > " + crr_path + smpls_ID + "_raw_reads.txt",file = sge)
+    print ("echo $(zcat " + fastq_raw_path + fastq_name_raw_R2 + " | wc -l )/4 | bc > " + crr_path + smpls_ID + "_raw_reads.txt",file = sge)
+    print ("## CLEANING ", file = sge)
     print ('''echo "Start to clean fastq files"''', file = sge)
     print ("#", file = sge)
     print ("fastp -i " + fastq_raw_path + fastq_name_raw_R1 + " -o " + fastq_clean_path + fastq_name_clean_R1 + " -I " + fastq_raw_path + fastq_name_raw_R2 + " -O " + fastq_clean_path + fastq_name_clean_R2 + " --unpaired1 " + fastq_unpaired_path + fastq_name_unpaired + " -w " + thread + " -y -x -z 9 -j " + fastp_json_path + json_name + " -h " + fastp_htlml_path + html_name, file = sge)
     print ("#", file = sge)
+    print ("#Calculating the number of reads in the clean fastq file", file = sge)
+    print ("echo $(zcat " + fastq_clean_path + fastq_name_clean_R1 + " | wc -l )/4 | bc > " + ccr_path + smpls_ID + "_clean_reads.txt",file = sge)
+    print ("echo $(zcat " + fastq_clean_path + fastq_name_clean_R2 + " | wc -l )/4 | bc > " + ccr_path + smpls_ID + "_clean_reads.txt",file = sge)
     print ('''duration=$(echo "$(date +%s.%N) - $start" | bc)''', file = sge)
     print ('''execution_time=`printf "%.2f seconds" $duration`''', file = sge)
     print ('''echo "Script Execution Time: $execution_time"''', file = sge)
@@ -170,5 +182,5 @@ for i in range(0, len(smpls_ID)):
     sample_name = extcol(matrix_csv, "Name")[i]
     sge = cleaning(ID)
     print(tiempo, file = pyoutput)
-    subprocess.run(["qsub",sge], stdout=pyoutput)
+    #subprocess.run(["qsub",sge], stdout=pyoutput)
     print(tiempo, file = pyoutput)
