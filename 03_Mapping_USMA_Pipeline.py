@@ -158,6 +158,9 @@ def mapping (smpls_ID):
         os.makedirs(fig_Qcycle_path)
     if not os.path.exists(fig_Qdist_path):
         os.makedirs(fig_Qdist_path)
+    depth_path = wd_project + "analysis/depth_coverage/"
+    if not os.path.exists(depth_path):
+        os.makedirs(depth_path)
     # Names
     fastq_name_clean_R1 = smpls_ID + "_" + sample_name + "_R1_clean.fq.gz"
     fastq_name_clean_R2 = smpls_ID + "_" + sample_name + "_R2_clean.fq.gz"
@@ -206,6 +209,9 @@ def mapping (smpls_ID):
     if not os.path.exists(cov_path):
         os.makedirs(cov_path)
     # Coverage requirements: names
+    depth_q00_name = smpls_ID + "_" + sample_name + ".Q00.depth"
+    depth_q20_name = smpls_ID + "_" + sample_name + ".Q20.depth"
+    depth_q30_name = smpls_ID + "_" + sample_name + ".Q30.depth"
     cov_name = smpls_ID + "_" + sample_name + ".coverage_per.bp"
     cov_name_bed5 = smpls_ID + "_" + sample_name + ".coverage.bed5"
     cov_name_wind = smpls_ID + "_" + sample_name + ".coverage_" + window + "bp_windows.bed"
@@ -250,6 +256,10 @@ def mapping (smpls_ID):
     print ("#", file = sge)
     ## Coverage
     print ("## COVERAGE", file = sge)
+    print ("# Coverage with samtools", file = sge)
+    print ("samtools depth -a " + bam_path + bam_addgp_name + " > " + depth_path + depth_q00_name, file = sge)
+    print ("samtools depth -a -Q 20 " + bam_path + bam_addgp_name + " > " + depth_path + depth_q20_name, file = sge)
+    print ("samtools depth -a -Q 30 " + bam_path + bam_addgp_name + " > " + depth_path + depth_q30_name, file = sge)    
     print ("## Obtain genome coverage in " + window + " bp non-overlapping windows", file = sge)
     print ("bedtools genomecov -ibam " + bam_path + bam_addgp_name + " -d > " + cov_path + cov_name, file = sge)
     print ('''awk -vFS="\\t" -vOFS="\\t" '{ print $1, $2, ($2 +1), ".", $3 }' ''' + cov_path + cov_name + " | sort-bed - > " + cov_path + cov_name_bed5, file = sge)
