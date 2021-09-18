@@ -106,7 +106,7 @@ source /etc/bashrc
 #$ -M ''' + email + '''
 ##
 ## Modules''', file = sge)
-    print ("module load bwa/0.7.4 htslib/1.2.1 gcc/5.1.0 samtools/1.9 picard/2.6.0 r/3.6.1 bedtools/2.27.1", file = sge)
+    print ("module load bwa/0.7.4 htslib/1.2.1 gcc/5.1.0 samtools/1.9 picard/2.6.0 r/3.6.1 bedtools/2.27.1 bedops/2.4.20", file = sge)
     print ("##", file = sge)
     print ("##", file = sge)
 
@@ -259,11 +259,7 @@ def mapping (smpls_ID):
     print ("# Coverage with samtools", file = sge)
     print ("samtools depth -a " + bam_path + bam_addgp_name + " > " + depth_path + depth_q00_name, file = sge)
     print ("samtools depth -a -Q 20 " + bam_path + bam_addgp_name + " > " + depth_path + depth_q20_name, file = sge)
-    print ("samtools depth -a -Q 30 " + bam_path + bam_addgp_name + " > " + depth_path + depth_q30_name, file = sge)    
-    print ("## Obtain genome coverage in " + window + " bp non-overlapping windows", file = sge)
-    print ("bedtools genomecov -ibam " + bam_path + bam_addgp_name + " -d > " + cov_path + cov_name, file = sge)
-    print ('''awk -vFS="\\t" -vOFS="\\t" '{ print $1, $2, ($2 +1), ".", $3 }' ''' + cov_path + cov_name + " | sort-bed - > " + cov_path + cov_name_bed5, file = sge)
-    print ("bedops --merge " + cov_path + cov_name_bed5 + " | bedops --chop " + window + " - | bedmap --echo --mean --delim '\\t' - " + cov_path + cov_name_bed5 + " > " + cov_path + cov_name_wind, file = sge)
+    print ("samtools depth -a -Q 30 " + bam_path + bam_addgp_name + " > " + depth_path + depth_q30_name, file = sge)
     print ("## END COVERAGE", file = sge)
     print ('''duration=$(echo "$(date +%s.%N) - $start" | bc)''', file = sge)
     print ('''execution_time=`printf "%.2f seconds" $duration`''', file = sge)
@@ -291,5 +287,5 @@ for i in range(0, len(smpls_ID)):
     ref_name = extcol(reference_csv, "RefName")[0]
     sge = mapping(ID)
     print(tiempo, file = pyoutput)
-    subprocess.run(["qsub",sge], stdout=pyoutput)
+    #subprocess.run(["qsub",sge], stdout=pyoutput)
     print(tiempo, file = pyoutput)
