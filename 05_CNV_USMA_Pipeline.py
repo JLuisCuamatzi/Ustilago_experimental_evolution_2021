@@ -121,7 +121,7 @@ def mapping (smpls_ID):
     #
     ref_genome = reference_path + "USMA_521_v2.fa"
     bam_path = wd_project + "data/bam/"
-    bam_file = bam_path + sample_name + "_USMA_BWA.mrkdup.addgp.bam"
+    bam_file = bam_path + smpls_ID + "_" + sample_name + "_BWA.mrkdup.addgp.bam"
     cnv_path = wd_project + "data/CNV/"
     if not os.path.exists(cnv_path):
         os.makedirs(cnv_path)
