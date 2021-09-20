@@ -123,19 +123,22 @@ def mapping (smpls_ID):
     cnv_path = wd_project + "data/CNV/"
     if not os.path.exists(cnv_path):
         os.makedirs(cnv_path)
-    cnv_file = wd_project + "analysis/CNV/" + sample_name + "_CNV." + window_kb + ".cnvnator"
+    cnv_out_path = wd_project + "analysis/CNV/"
+    if not os.path.exists(cnv_out_path):
+        os.makedirs(cnv_out_path)
+    cnv_file = cnv_out_path + smpls_ID + "_" + sample_name + "_CNV." + window_kb + ".cnvnator"
     #
     print ('''start=$(date +%s.%N)''', file = sge)
     print ("## Start: Copy Number Variation ", file = sge )
-    print("cnvnator -root " + cnv_path + sample_name + "_CNV.root -genome " + ref_genome + " -tree " + bam_file, file = sge) # 1
+    print("cnvnator -root " + cnv_path + smpls_ID + "_" + sample_name + "_CNV.root -genome " + ref_genome + " -tree " + bam_file, file = sge) # 1
     print ("#", file = sge)
-    print("cnvnator -root " + cnv_path + sample_name + "_CNV.root -his " + window_kb + " -d " + reference_path, file = sge) # 2
+    print("cnvnator -root " + cnv_path + smpls_ID + "_" + sample_name + "_CNV.root -his " + window_kb + " -d " + reference_path, file = sge) # 2
     print ("#", file = sge)
-    print("cnvnator -root " + cnv_path + sample_name + "_CNV.root -stat " + window_kb, file = sge) # 3
+    print("cnvnator -root " + cnv_path + smpls_ID + "_" + sample_name + "_CNV.root -stat " + window_kb, file = sge) # 3
     print ("#", file = sge)
-    print("cnvnator -root " + cnv_path + sample_name + "_CNV.root -partition " + window_kb, file = sge) # 4
+    print("cnvnator -root " + cnv_path + smpls_ID + "_" + sample_name + "_CNV.root -partition " + window_kb, file = sge) # 4
     print ("#", file = sge)
-    print("cnvnator -root " + cnv_path + sample_name + "_CNV.root -call " + window_kb + " > " + cnv_file, file = sge) # 5
+    print("cnvnator -root " + cnv_path + smpls_ID + "_" + sample_name + "_CNV.root -call " + window_kb + " > " + cnv_file, file = sge) # 5
     print ("#", file = sge)
     print ("#", file = sge)
     print ("#", file = sge)

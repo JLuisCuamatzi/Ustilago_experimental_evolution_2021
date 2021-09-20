@@ -3,16 +3,14 @@
 ###############################################################################################################################################
 ### File:           04_Variant_calling_USMA_Pipeline.py
 ### Written by:     Jorge Luis Cuamatzi Flores
-### Date:           2021_August_16
+### Date:           2021_September_20
 ###
 ### Project:        This script writes a sge file to map and do the variant calling
 ### Input:          A csv file with information and simple paths
 ### Output:         SGE to do mapping and variant calling for several samples
 ###
-# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/04_Variant_calling_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t VC -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2.csv -M 16 -w 200
-
-#testing
-# python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/04_Variant_calling_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/Pipeline_testing/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/Pipeline_testing/ID_test.csv -t VC -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2/USMA_521_v2.fa -M 16 -g /mnt/Timina/lmorales/Public/Ustilago/reference/annotation/USMA_521_v2_allChr.gff -n jcuamatzi@liigh.unam.mx -p 1
+# How execute this script:
+# python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/04_Variant_calling_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t VCF -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2/USMA_521_v2.fa -M 16 -g /mnt/Timina/lmorales/Public/Ustilago/reference/annotation/USMA_521_v2_allChr.gff -n jcuamatzi@liigh.unam.mx -p 1
 ###############################################################################################################################################
 ## Libraries
 import argparse
@@ -122,7 +120,7 @@ def variantcall (smpls_ID):
     sge = open(sge_name, "w")
     header(smpls_ID,sge)
     ## Paths
-    bam_path = wd_project + "data/bam/"
+    bam_path = wd_project + "data/bam/mrkdup_addgp_bam/"
     vcf_path = wd_project + "data/VCF/"
     if not os.path.exists(vcf_path):
         os.makedirs(vcf_path)
@@ -213,13 +211,13 @@ def variantcall (smpls_ID):
     SNP_flt_vcf_PASS_BG_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_SNP_PASS_BG.vcf.gz"
     INDEL_flt_vcf_PASS_BG_name = smpls_ID + "_" + sample_name + "_" + map_tool + "_INDEL_PASS_BG.vcf.gz"
     
-    TsTv_flt_PASS_path = wd_project + "analysis/vcf/TsTv/PASS/"
+    TsTv_flt_PASS_path = wd_project + "analysis/" + task + "/TsTv/PASS/"
     if not os.path.exists(TsTv_flt_PASS_path):
         os.makedirs(TsTv_flt_PASS_path)
-    insrts_flt_PASS_path = wd_project + "analysis/vcf/INDEL/insertions/PASS/"
+    insrts_flt_PASS_path = wd_project + "analysis/" + task + "/INDEL/insertions/PASS/"
     if not os.path.exists(insrts_flt_PASS_path):
         os.makedirs(insrts_flt_PASS_path)
-    deltns_flt_PASS_path = wd_project + "analysis/vcf/INDEL/deletions/PASS/"
+    deltns_flt_PASS_path = wd_project + "analysis/" + task + "/INDEL/deletions/PASS/"
     if not os.path.exists(deltns_flt_PASS_path):
         os.makedirs(deltns_flt_PASS_path)
     annttd_SNP_name = smpls_ID + "_" + sample_name + "_SNP_raw_annotated.vcf.gz"
@@ -230,23 +228,23 @@ def variantcall (smpls_ID):
     annttd_INDEL_PASS_name = smpls_ID + "_" + sample_name + "_INDEL_PASS_annotated.vcf.gz"
     annttd_SNP_PASS_BG_name = smpls_ID + "_" + sample_name + "_SNP_PASS_BG_annotated.vcf.gz"
     annttd_INDEL_PASS_BG_name = smpls_ID + "_" + sample_name + "_INDEL_PASS_BG_annotated.vcf.gz"
-    SNP_position_path = wd_project + "analysis/04_vc/filters/SNP_position/"
+    SNP_position_path = wd_project + "analysis/" + task + "/filters/SNP_position/"
     if not os.path.exists(SNP_position_path):
         os.makedirs(SNP_position_path)
     SNP_pos_name = smpls_ID + "_" + sample_name + "_SNP_Position.txt"
-    SNP_QD_path = wd_project + "analysis/04_vc/filters/QD/"
+    SNP_QD_path = wd_project + "analysis/" + task + "/filters/QD/"
     if not os.path.exists(SNP_QD_path):
         os.makedirs(SNP_QD_path)
     SNP_QD_name = smpls_ID + "_" + sample_name + "_SNP_QD.txt"
-    SNP_FS_path = wd_project + "analysis/04_vc/filters/FS/"
+    SNP_FS_path = wd_project + "analysis/" + task + "/filters/FS/"
     if not os.path.exists(SNP_FS_path):
         os.makedirs(SNP_FS_path)
     SNP_FS_name = smpls_ID + "_" + sample_name + "_SNP_FS.txt"
-    SNP_SOR_path = wd_project + "analysis/04_vc/filters/SOR/"
+    SNP_SOR_path = wd_project + "analysis/" + task + "/filters/SOR/"
     if not os.path.exists(SNP_SOR_path):
         os.makedirs(SNP_SOR_path)
     SNP_SOR_name = smpls_ID + "_" + sample_name + "_SNP_SOR.txt"
-    SNP_MQ_path = wd_project + "analysis/04_vc/filters/MQ/"
+    SNP_MQ_path = wd_project + "analysis/" + task + "/filters/MQ/"
     if not os.path.exists(SNP_MQ_path):
         os.makedirs(SNP_MQ_path)
     SNP_MQ_name = smpls_ID + "_" + sample_name + "_SNP_MQ.txt"
@@ -367,8 +365,7 @@ def variantcall (smpls_ID):
     print ('''echo -e "Chr\\tPos\\tFS" | cat - ''' + SNP_MQ_path + sample_name + "_MQ_value.2." + smpls_ID + "tmp.txt > " + SNP_MQ_path + SNP_MQ_name, file = sge)
     print ("rm " + SNP_MQ_path + "*." + smpls_ID + "tmp.txt", file = sge)    
     sge.close()
-    return sge_name  
-# Update 15/09/2021
+    return sge_name
 
 ##### MAIN #####
 ## OPEN FILE ##
@@ -386,5 +383,5 @@ for i in range(0, len(smpls_ID)):
     sample_name = extcol(matrix_csv, "Name")[i]
     sge = variantcall(ID)
     print(tiempo, file = pyoutput)
-    #subprocess.run(["qsub",sge], stdout=pyoutput)
+    subprocess.run(["qsub",sge], stdout=pyoutput)
     print(tiempo, file = pyoutput)
