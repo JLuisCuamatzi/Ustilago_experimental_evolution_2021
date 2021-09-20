@@ -367,6 +367,7 @@ def variantcall (smpls_ID):
     sge.close()
     return sge_name
 
+
 ##### MAIN #####
 ## OPEN FILE ##
 matrix_csv = opencsv(arg_file)
