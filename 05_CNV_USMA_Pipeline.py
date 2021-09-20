@@ -11,9 +11,7 @@
 ### Output:         SGE to do mapping and variant calling for several samples
 ###
 # How execute this script:
-#python3 /mnt/Timina/lmorales/Public/Ustilago/B1/bin/scripts/python_scripts/13_CVNnator_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t CNV -r /mnt/Timina/lmorales/Public/Ustilago/reference/OnebyOne/ -w 100
-# for the first fastq files (2019)
-#python3 /mnt/Timina/lmorales/Public/Ustilago/B1/bin/scripts/python_scripts/13_CNVnator_USMA_Pipeline.py -f /mnt/Timina/lmorales/Public/Ustilago/B1/information/USMA_ExpEvo_Samples.csv -d /mnt/Timina/lmorales/Public/Ustilago/B1/ -r /mnt/Timina/lmorales/Public/Ustilago/reference/OnebyOne/ -t CNV -w 100
+#python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/05_CNV_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t CNV -r /mnt/Timina/lmorales/Public/Ustilago/reference/OnebyOne/ -w 100
 ###############################################################################################################################################
 ## Libraries
 import argparse
@@ -120,7 +118,7 @@ def mapping (smpls_ID):
     header(smpls_ID,sge)
     #
     ref_genome = reference_path + "USMA_521_v2.fa"
-    bam_path = wd_project + "data/bam/"
+    bam_path = wd_project + "data/bam/mrkdup_addgp_bam/"
     bam_file = bam_path + smpls_ID + "_" + sample_name + "_BWA.mrkdup.addgp.bam"
     cnv_path = wd_project + "data/CNV/"
     if not os.path.exists(cnv_path):
@@ -161,7 +159,7 @@ pyout_name = os.path.normpath(pyout_name)
 pyoutput = open(pyout_name, "a+")
 for i in range(0, len(smpls_ID)):
     ID = smpls_ID[i]
-    sample_name = extcol(matrix_csv, "ShortName_1")[i]
+    sample_name = extcol(matrix_csv, "Name")[i]
     sge = mapping(ID)
     print(tiempo, file = pyoutput)
     subprocess.run(["qsub",sge], stdout=pyoutput)
