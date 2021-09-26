@@ -362,7 +362,7 @@ def variantcall (smpls_ID):
     print ("# MQ filter", file = sge)
     print ('''zgrep -P "\w+\\t" ''' + gt_vcf_path + gt_vcf_name + ''' | awk -F "\\t" '{print $1"\\t"$2"\\t"$8}' | grep -oE ";MQ=\w+.\w+" | awk -F "=" '{print $2}' > ''' + SNP_MQ_path + sample_name + "_MQ_value." + smpls_ID + "tmp.txt", file = sge)
     print ("paste " + SNP_position_path + SNP_pos_name + " " + SNP_MQ_path + sample_name + "_MQ_value." + smpls_ID + "tmp.txt > " + SNP_MQ_path + sample_name + "_MQ_value.2." + smpls_ID + "tmp.txt", file = sge)
-    print ('''echo -e "Chr\\tPos\\tFS" | cat - ''' + SNP_MQ_path + sample_name + "_MQ_value.2." + smpls_ID + "tmp.txt > " + SNP_MQ_path + SNP_MQ_name, file = sge)
+    print ('''echo -e "Chr\\tPos\\tMQ" | cat - ''' + SNP_MQ_path + sample_name + "_MQ_value.2." + smpls_ID + "tmp.txt > " + SNP_MQ_path + SNP_MQ_name, file = sge)
     print ("rm " + SNP_MQ_path + "*." + smpls_ID + "tmp.txt", file = sge)    
     sge.close()
     return sge_name

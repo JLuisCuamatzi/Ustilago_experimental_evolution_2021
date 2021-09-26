@@ -10,7 +10,7 @@
 ### Input:          A csv file with information and simple paths
 ### Output:         SGE to do mapping and variant calling for several samples
 ###
-# How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/04.2_SNPbyF_AddSample_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t VCF -R /mnt/Timina/lmorales/Public/Ustilago/C1/bin/Rscript/VCF/SNP_by_filter_AddSampleID.R -M 8 -c MQ
+### How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/04.3_Plot_SNPbyFilter_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t VCF -R /mnt/Timina/lmorales/Public/Ustilago/C1/bin/Rscript/VCF/Plot_SNP_by_filter.R -M 8
 ###############################################################################################################################################
 ## Libraries
 import argparse
@@ -32,7 +32,6 @@ ag.add_argument("-R", "--Rscript_path", default = "", help = "path for the R scr
 ag.add_argument("-d", "--directory", default = "/home/jcuamatzi", help = "path to the project directory")
 ag.add_argument("-t", "--task", default = "", help = "Task")
 ag.add_argument("-M", "--memory", default = "2", help = "RAM memory")
-ag.add_argument("-c", "--category", default = "QD", help = "Filter category (QD, FS, MQ, SOR")
 
 ##
 #
@@ -43,7 +42,6 @@ email = str(args["email"])
 directory = str(args["directory"])
 task = str(args["task"])
 memory = str(args["memory"])
-filter_category = str(args["category"])
 
 
 ##### Functions #####
@@ -82,8 +80,8 @@ def extcol (array, header):
 #
 #def header(smpls_ID, sge):
 def header(smpls_ID,sge):
-    path_error = wd_project + "log/" + task + "/error/VCF/SNPbyFilter/"
-    path_out = wd_project + "log/" + task + "/out/VCF/SNPbyFilter/"
+    path_error = wd_project + "log/" + task + "/error/VCF/SNPbyFilter/Plot/"
+    path_out = wd_project + "log/" + task + "/out/VCF/SNPbyFilter/Plot/"
     if not os.path.exists(path_error):
         os.makedirs(path_error)
     if not os.path.exists(path_out):
@@ -93,9 +91,9 @@ def header(smpls_ID,sge):
 #$ -cwd
 . /etc/profile.d/modules.sh
 ##Error file
-#$ -e''', path_error + smpls_ID + "." + fecha + "." + tiempo + filter_category + "_AddSample.error",'''
+#$ -e''', path_error + smpls_ID + "." + fecha + "." + tiempo + "_Plot_hard_filtering.error",'''
 ##Out file
-#$ -o''', path_out + smpls_ID + "." + fecha + "." + tiempo + filter_category + "_AddSample.out",'''
+#$ -o''', path_out + smpls_ID + "." + fecha + "." + tiempo + "_Plot_hard_filtering.out",'''
 #$ -S /bin/bash
 ## Job's name
 #$ -N''', task + "_" + ID,'''
@@ -111,28 +109,31 @@ source /etc/bashrc
     print ("##", file = sge)
 
 def mapping (smpls_ID):
-    save_sge = wd_project + "bin/SGE/" + task + "/AddSample_SNPbyFilter/" + filter_category
+    save_sge = wd_project + "bin/SGE/" + task + "/Plot_Hard_Filtering"
     if not os.path.exists(save_sge):    
         os.makedirs(save_sge)
-    sge_name = save_sge + "/" + fecha + "_" + smpls_ID + "_" + sample_name + "_" + filter_category + "_AddSample.sge"
+    sge_name = save_sge + "/" + fecha + "_" + smpls_ID + "_" + sample_name + "_Plot_Hard_filtering.sge"
     sge = open(sge_name, "w")
     header(smpls_ID,sge)
-    table_annotated = wd_project + "analysis/VCF/filters/" + filter_category + "/" + smpls_ID + "_" + sample_name + "_SNP_" + filter_category + ".txt" 
-    final_table_path = wd_project + "analysis/VCF/filters/" + filter_category + "/"
-    if not os.path.exists(final_table_path):
-        os.makedirs(final_table_path)
-    final_table = final_table_path + smpls_ID + "_SNP_" + filter_category + ".txt"
-    Rscript_out_path = wd_project + "log/Rscripts/" + task + "/AddSample/"
+    QD_IN = wd_project + "analysis/VCF/filters/QD/" + smpls_ID + "_SNP_QD.txt"
+    FS_IN = wd_project + "analysis/VCF/filters/FS/" + smpls_ID + "_SNP_FS.txt"
+    SOR_IN = wd_project + "analysis/VCF/filters/SOR/" + smpls_ID + "_SNP_SOR.txt"
+    MQ_IN = wd_project + "analysis/VCF/filters/MQ/" + smpls_ID + "_SNP_MQ.txt"
+    output_plot_path = wd_project + "/analysis/figures/VCF/SNP_by_Filter/"
+    if not os.path.exists(output_plot_path):
+        os.makedirs(output_plot_path)
+    output_plot = output_plot_path + smpls_ID + "_SNP_by_HardFiltering.png"
+    Rscript_out_path = wd_project + "log/Rscripts/" + task + "/Plot_Hard_Filtering/"
     if not os.path.exists(Rscript_out_path):
         os.makedirs(Rscript_out_path)
-    Rscript_output = Rscript_out_path + smpls_ID + "_" + filter_category + "_AddSample.Rout"
+    Rscript_output = Rscript_out_path + smpls_ID + "_Plot_Hard_Filtering.Rout"
     ## Coverage requirements
     # Coverage requirements: paths
     #
     print ('''start=$(date +%s.%N)''', file = sge)
     ## Coverage
-    print ("## START the annotation of the variants", file = sge)
-    print ('''R CMD BATCH --no-save --no-restore "--args INPUT=''' + "'" + table_annotated + "'" + " FILTER='" + filter_category + "' SAMPLE_ID='" + smpls_ID + "' OUTPUT='" + final_table + "'" + '''" ''' + Rscript_file + " " + Rscript_output, file = sge)
+    print ("## START the annotation of the variants", file = sge)   
+    print ('''R CMD BATCH --no-save --no-restore "--args QD_IN=''' + "'" + QD_IN + "' FS_IN='" + FS_IN + "' SOR_IN='" + SOR_IN + "' MQ_IN='" + MQ_IN + "' SAMPLE_ID='" + smpls_ID + "' OUTPUT='" + output_plot + "'" + '''" ''' + Rscript_file + " " + Rscript_output, file = sge)
     print ("## END the annotation of the variants", file = sge)
     print ('''duration=$(echo "$(date +%s.%N) - $start" | bc)''', file = sge)
     print ('''execution_time=`printf "%.2f seconds" $duration`''', file = sge)
