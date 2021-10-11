@@ -80,8 +80,8 @@ def extcol (array, header):
 #
 #def header(smpls_ID, sge):
 def header(smpls_ID,sge):
-    path_error = wd_project + "log/" + task + "/error/"
-    path_out = wd_project + "log/" + task + "/out/"
+    path_error = wd_project + "log/" + task + "/" + window_kb + "bp/error/"
+    path_out = wd_project + "log/" + task + "/" + window_kb + "bp/out/"
     if not os.path.exists(path_error):
         os.makedirs(path_error)
     if not os.path.exists(path_out):
@@ -110,7 +110,7 @@ source /etc/bashrc
     print ("##", file = sge)
 
 def mapping (smpls_ID):
-    save_sge = wd_project + "bin/SGE/" + task + "/"
+    save_sge = wd_project + "bin/SGE/" + task  + "/" + window_kb + "bp/"
     if not os.path.exists(save_sge):    
         os.makedirs(save_sge)
     sge_name = save_sge + "/" + fecha + "_" + smpls_ID + "_" + sample_name + ".sge"
@@ -120,10 +120,10 @@ def mapping (smpls_ID):
     ref_genome = reference_path + "USMA_521_v2.fa"
     bam_path = wd_project + "data/bam/mrkdup_addgp_bam/"
     bam_file = bam_path + smpls_ID + "_" + sample_name + "_BWA.mrkdup.addgp.bam"
-    cnv_path = wd_project + "data/CNV/"
+    cnv_path = wd_project + "data/CNV/" + window_kb + "bp/"
     if not os.path.exists(cnv_path):
         os.makedirs(cnv_path)
-    cnv_out_path = wd_project + "analysis/CNV/"
+    cnv_out_path = wd_project + "analysis/CNV/" + window_kb + "bp/"
     if not os.path.exists(cnv_out_path):
         os.makedirs(cnv_out_path)
     cnv_file = cnv_out_path + smpls_ID + "_" + sample_name + "_CNV." + window_kb + ".cnvnator"
