@@ -125,6 +125,8 @@ def mapping (smpls_ID):
     covbygene_file = smpls_ID + "_" + chrm + "_CovByGeneAllPos.tsv"   
     print ('''start=$(date +%s.%N)''', file = sge)
     print ("## START: extracting the coverage by each gene in the chromosome " + chrm, file = sge)
+    print ("sed -i 's/$/\\t" + smpls_ID + "/' " + cov_bp_file, file = sge)
+    print ("sed -i '1iChr\\tPosition\\tCoverage\\tSample' " + cov_bp_file, file = sge)
     print ("coverageBed -a " + bed_path + chr_bed_file + " -d -b " + bam_file + " > " + covbygene_path + covbygene_file, file = sge)
     print ("#", file = sge)
     print ("## END: extracting the coverage by each gene in the chromosome " + chrm, file = sge)
