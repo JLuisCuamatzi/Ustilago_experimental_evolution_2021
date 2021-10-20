@@ -1,15 +1,17 @@
 ###
 ###
 ###############################################################################################################################################
-### File:           03.8_Nuclear_Mitoch_Ratio_USMA_Pipeline.py
+### File:           07.2_Nucmer_USMA_Pipeline.py
 ### Written by:     Jorge Luis Cuamatzi Flores
-### Date:           2021_October_19
-### Update:         2021_October_19
+### Date:           2021_October_20
+### Update:         
 ###
-### Project:        This script writes a sge file to estimate the nuclear mitoch ratio
+### Project:        This script writes a sge file to do a Copy Number Variation with CNVator
 ### Input:          A csv file with information and simple paths
+### Output:         SGE to do mapping and variant calling for several samples
 ###
-### How execute this script: python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/03.8_Nuclear_Mitoch_Ratio_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t Mapping -R /mnt/Timina/lmorales/Public/Ustilago/C1/bin/Rscript/Mapping/Coverage_ratio.R -M 8
+# How execute this script:
+#python3 /mnt/Timina/lmorales/Public/Ustilago/C1/bin/scripts/07.2_Nucmer_USMA_Pipeline.py -d /mnt/Timina/lmorales/Public/Ustilago/C1/ -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -t Assembly -M 8 -f /mnt/Timina/lmorales/Public/Ustilago/C1/ID.csv -p /mnt/Timina/lmorales/Public/Ustilago/C1/data/Assembly/ -r /mnt/Timina/lmorales/Public/Ustilago/reference/USMA_521_v2/USMA_521_v2.fa
 ###############################################################################################################################################
 ## Libraries
 import argparse
@@ -19,29 +21,29 @@ import sys
 import subprocess
 ##
 fecha = date.today().strftime('%Y%m%d')
-tiempo = datetime.now().strftime("%H.%M")
+tiempo = datetime.now().strftime("%H:%M:%S")
 ##
 ag = argparse.ArgumentParser()
 ag = argparse.ArgumentParser(
     description = "Python scripts that takes information from csv file and write lines",
     usage = "python3 Practice_script.py -f ~/USMA_ExpEvo_Samples.csv")
-ag.add_argument("-d", "--directory", default = "/home/jcuamatzi", help = "path to the project directory")
 ag.add_argument("-f", "--file", default = "", help = "csv with information of ID") # to read a csv file with sample imformation
-ag.add_argument("-t", "--task", default = "", help = "Task")
-ag.add_argument("-n", "--email", default = "jcuamatzi@dna.liigh.unam.mx", help = "If you want to receive a notification when the process is done") 
-ag.add_argument("-R", "--Rscript_path", default = "", help = "path for the R script")
+ag.add_argument("-n", "--email", default = "jcuamatzi@liigh.unam.mx", help = "If you want to receive a notification when the process is done")
+ag.add_argument("-t", "--task", default = "", help = "Task of this script")
+ag.add_argument("-d", "--directory", default = "/home/jcuamatzi", help = "path to the project directory")
 ag.add_argument("-M", "--memory", default = "2", help = "RAM memory")
-
+ag.add_argument("-p", "--pathAssembly", default = "", help = "path for the fastq files")
+ag.add_argument("-r", "--ReferenceGenome", default = "", help = "Reference genome to compare the de novo assembly")
 ##
 #
 args = vars(ag.parse_args())
-directory = str(args["directory"])
 arg_file = args["file"]
-task = str(args["task"])
 email = str(args["email"])
-Rscript_file = args["Rscript_path"]
-memory = str(args["memory"])
-
+task = str(args["task"])
+directory = str(args["directory"])
+memory = str(args["memory"]) #RAM Memory
+path_assembly = str(args["pathAssembly"])
+ref_genome = str(args["ReferenceGenome"])
 ##### Functions #####
 # Function to open a csv file
 # With this function, we are only open the file
@@ -76,10 +78,10 @@ def extcol (array, header):
     return arr
 # Function to write the header of sge file
 #
-#def header(smpls_ID, sge):
-def header(smpls_ID,sge):
-    path_error = wd_project + "log/" + task + "/error/NuclearMitochRatio/"
-    path_out = wd_project + "log/" + task + "/out/NuclearMitochRatio/"
+#def header(GeneByChr, sge):
+def header(smpls_ID, sge):
+    path_error = wd_project + "log/" + task + "/error/Comparison/"
+    path_out = wd_project + "log/" + task + "/out/Comparison/"
     if not os.path.exists(path_error):
         os.makedirs(path_error)
     if not os.path.exists(path_out):
@@ -89,55 +91,43 @@ def header(smpls_ID,sge):
 #$ -cwd
 . /etc/profile.d/modules.sh
 ##Error file
-#$ -e''', path_error + smpls_ID + "." + fecha + ".NuclearMitochRatio.error",'''
+#$ -e''', path_error + ID + "_" + task + "_Comparison.error",'''
 ##Out file
-#$ -o''', path_out + smpls_ID + "." + fecha + ".NuclearMitochRatio.out",'''
+#$ -o''', path_out + ID + "_" + task + "_Comparison.out",'''
 #$ -S /bin/bash
 ## Job's name
-#$ -N''', task + "_" + ID,'''
+#$ -N''', task + "_" + smpls_ID,'''
 #$ -l vf='''+ memory +'''G
 #$ -pe openmp 10
 #$ -m e
 source /etc/bashrc
 ## notification
 #$ -M ''' + email + '''
-##
-## Modules''', file = sge)
-    print ("module load r/3.6.1", file = sge)
+##''', file = sge)
+    print ("module load mummer4/4.0", file = sge)
     print ("##", file = sge)
 
 def mapping (smpls_ID):
-    save_sge = wd_project + "bin/SGE/" + task + "/NuclearMitochRatio"
+    save_sge = wd_project + "bin/SGE/" + task + "/Comparison"
     if not os.path.exists(save_sge):    
         os.makedirs(save_sge)
-    sge_name = save_sge + "/" + fecha + "_" + smpls_ID + "_" + sample_name + "_NuclearMitochRatio.sge"
+    sge_name = save_sge + "/" + fecha + "_" + smpls_ID + "_DeNovo_Assembly_Comparison.sge"
     sge = open(sge_name, "w")
-    header(smpls_ID,sge)
-    
-    FILE = wd_project + "analysis/depth_coverage/" + smpls_ID + "_" + sample_name + ".Q30.depth.gz"
-    OUTPUT_1 = wd_project + "analysis/Coverage/NuclearMitochRatio/" + smpls_ID + "_AllChrStats.csv"
-    if not os.path.exists(wd_project + "analysis/Coverage/NuclearMitochRatio/"):
-        os.makedirs(wd_project + "analysis/Coverage/NuclearMitochRatio/")
-    OUTPUT_2 = wd_project + "analysis/Coverage/NuclearMitochRatio/" + smpls_ID + "_Ratio_NuclearMitoch.csv"
-    OUTPUT_3 = wd_project + "analysis/Coverage/NuclearMitochRatio/" + smpls_ID + "_NuclearStats.csv"
-    OUTPUT_4 = wd_project + "analysis/Coverage/NuclearMitochRatio/" + smpls_ID + "_MitochStats.csv"
-    Rscript_out_path = wd_project + "log/Rscripts/" + task + "/NuclearMitochRatio/"
-    if not os.path.exists(Rscript_out_path):
-        os.makedirs(Rscript_out_path)
-    Rscript_output = Rscript_out_path + smpls_ID + "_NuclearMitochRatio.Rout"
-    ## Coverage requirements
-    # Coverage requirements: paths
-    #
+    header(smpls_ID, sge)
+    # paths
+    output_path = wd_project + "analysis/Comparison/"
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
     print ('''start=$(date +%s.%N)''', file = sge)
-    ## Coverage
-    print ("## START: Obtain the nuclear/mitochondrial ratio", file = sge)
-    print ('''R CMD BATCH --no-save --no-restore "--args FILE=''' + "'" + FILE + "' SAMPLE='" + smpls_ID + "' OUTPUT_1='" + OUTPUT_1 + "' OUTPUT_2='" + OUTPUT_2 + "' OUTPUT_3='" + OUTPUT_3 + "' OUTPUT_4='" + OUTPUT_4 + "'" + '''" ''' + Rscript_file + " " + Rscript_output, file = sge)
-    print ("## END: Obtain the nuclear/mitochondrial ratio", file = sge)
+    print ("## START: Genome Assembly Comparison with the ref", file = sge)
+    print ("cd " + path_assembly + smpls_ID + "/", file = sge)
+    print ("nucmer --maxmatch -l 100 -c 500 " + ref_genome + " " + path_assembly + smpls_ID + "/" + smpls_ID + "_scaffolds.fasta --prefix " + smpls_ID, file = sge)
+    print ("## END: Genome Assembly Comparison with the ref", file = sge)
     print ('''duration=$(echo "$(date +%s.%N) - $start" | bc)''', file = sge)
     print ('''execution_time=`printf "%.2f seconds" $duration`''', file = sge)
     print ('''echo "Script Execution Time: $execution_time"''', file = sge)
     sge.close()
-    return sge_name
+    return sge_name  
 
 ##### MAIN #####
 ## OPEN FILE ##
